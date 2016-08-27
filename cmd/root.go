@@ -19,15 +19,18 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/Sirupsen/logrus"
+
+	"github.com/jmahowald/formterra/core"
+	"github.com/jmahowald/formterra/tfproject"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-//go:generate go-bindata -pkg cmd -o assets.go assets/
-
 var cfgFile string
 var TfDir, EnvName, OwnerName string
-
+var debugLogging bool
 var OverWriteFiles bool
 
 //mostly a dev flag that allows me to switch off reading
@@ -44,9 +47,24 @@ examples and usage of using your application. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
+
+	// Set logging for all commands
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		if debugLogging {
+			logrus.SetLevel(logrus.DebugLevel)
+		}
+	},
+
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//	Run: func(cmd *cobra.Command, args []string) { },
+}
+
+var versionCommand = &cobra.Command{
+	Use: "version",
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Printf("Version: %s BuildTime:%s", core.Version, core.BuildTime)
+	},
 }
 
 // Execute adds all child commands to the root command sets flags appropriately.
@@ -68,16 +86,21 @@ func init() {
 
 	RootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c",
 		filepath.Join(homeDir, ".formterra", "formterra.yml"), "config file")
+	RootCmd.PersistentFlags().BoolVar(&debugLogging, "debug", false, "turn on debug")
 
 	RootCmd.PersistentFlags().StringVarP(&TfDir, "terraform-dir", "d",
 		filepath.Join(homeDir, ".formterra", "terraform"), "directory where generated terraform will go")
 
-	RootCmd.PersistentFlags().BoolP("overwrite", "w",
+	//TODO should use a contant
+	RootCmd.PersistentFlags().BoolP(tfproject.Overwrite, "w",
 		false, "if there is something already there, do we overwrite when we generate")
 
 	RootCmd.PersistentFlags().StringVarP(&EnvName, "env", "e", "", "what environment name the resource should be tagged with ")
 	RootCmd.PersistentFlags().StringVarP(&OwnerName, "owner", "o", "", "what owner should the resources be tagged with")
 	cobra.OnInitialize(initConfig)
+
+	RootCmd.AddCommand(versionCommand)
+
 }
 
 // initConfig reads in config file and ENV variables if set.

@@ -16,11 +16,6 @@ package main
 
 import "github.com/jmahowald/formterra/cmd"
 
-var (
-	Version string
-	BuildTime string
-)
-
 func main() {
 	cmd.Execute()
 }

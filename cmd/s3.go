@@ -16,9 +16,9 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"os"
 
+	tf "github.com/jmahowald/formterra/tfproject"
 	"github.com/spf13/cobra"
 )
 
@@ -34,13 +34,13 @@ type S3BucketRequest struct {
 var bucketRequest S3BucketRequest
 
 func render(bucketRequest S3BucketRequest) {
-	templ := parseTemplate("s3terraform", "s3.tf")
-	tf := TerraformLayer{Name: bucketRequest.BucketName}
-	f := tf.openForWrite("main.tf")
-	if err := templ.Execute(f, bucketRequest); err != nil {
-		log.Fatalln("Unable to generate template", err)
+
+	layer := tf.TerraformLayer{Name: "bucket"}
+	s3Proj := tf.PredefinedTerraformProjects{
+		TerraformLayer: layer,
+		Templates:      []string{"s3.tf"},
 	}
-	tf.makeMake()
+	s3Proj.Write(bucketRequest)
 }
 
 var dryNum = true
