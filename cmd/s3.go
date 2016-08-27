@@ -17,39 +17,46 @@ package cmd
 import (
 	"fmt"
 	"log"
-	"github.com/spf13/cobra"
 	"os"
+
+	"github.com/spf13/cobra"
 )
 
+// S3BucketRequest Used to make  a new bucket in s3
+// because of the global namespace, we try to
+// enforce having a base fqdn and a name on top of that.
 type S3BucketRequest struct {
-	Fqdn string
-	BucketName string
+	Fqdn        string
+	BucketName  string
 	UnVersioned bool
 }
 
 var bucketRequest S3BucketRequest
+
 func render(bucketRequest S3BucketRequest) {
-  templ := ParseTemplate("s3terraform", "s3.tf")
-	f := OpenForWrite("bucket","main.tf")
+	templ := parseTemplate("s3terraform", "s3.tf")
+	tf := TerraformLayer{Name: bucketRequest.BucketName}
+	f := tf.openForWrite("main.tf")
 	if err := templ.Execute(f, bucketRequest); err != nil {
 		log.Fatalln("Unable to generate template", err)
 	}
+	tf.makeMake()
 }
 
 var dryNum = true
-var s3Cmd cobra.Command = cobra.Command{
+var s3Cmd = cobra.Command{
 	Use:   "s3 <bucket_name>",
 	Short: "Creates s3 buckets using terraform",
 	Long: `Generates terraform necessary to create an s3 bucket
 	this allows us to more finely tune
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if(bucketRequest.BucketName == "") {
+		if bucketRequest.BucketName == "" {
 			fmt.Println("You must provide a bucket name")
 			cmd.Usage()
 			return
 		}
-		if(bucketRequest.Fqdn == ""){
+		if bucketRequest.Fqdn == "" {
 			fmt.Println("You must provide fqdn for the bucket")
 			return
 		}
@@ -59,10 +66,9 @@ var s3Cmd cobra.Command = cobra.Command{
 	},
 }
 
-
 func fail(msg string) {
 	fmt.Println(msg)
-	fmt.Println(s3Cmd.Usage)
+	s3Cmd.Usage()
 	os.Exit(-1)
 }
 func init() {
@@ -77,6 +83,6 @@ func init() {
 	// is called directly, e.g.:
 	s3Cmd.Flags().StringVarP(&bucketRequest.BucketName, "bucket", "b", "", "what's the base name for your bucket")
 	s3Cmd.Flags().StringVarP(&bucketRequest.Fqdn, "fqdn", "f", "", "is prepended onto your bucket name")
-	s3Cmd.Flags().BoolVarP(&bucketRequest.UnVersioned, "unversioned", "u",  false, "do you want the bucket unversioned")
+	s3Cmd.Flags().BoolVarP(&bucketRequest.UnVersioned, "unversioned", "u", false, "do you want the bucket unversioned")
 
 }

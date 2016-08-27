@@ -1,25 +1,25 @@
 package cmd
 
 import (
-	"text/template"
+	"fmt"
+	"io/ioutil"
 	"log"
-  "fmt"
-  "io/ioutil"
+	"text/template"
 )
 
-func ParseTemplate(name,path string) *template.Template {
+func parseTemplate(name, path string) *template.Template {
 	// var templateBytes byte[]
-  var templateBytes []byte
-  var err error
-	if(EmbeddedTemplatesDir == "") {
-		templateBytes, err = Asset(fmt.Sprintf("templates/%s",path))
+	var templateBytes []byte
+	var err error
+	if EmbeddedTemplatesDir == "" {
+		templateBytes, err = Asset(fmt.Sprintf("assets/%s", path))
 		if err != nil {
 			log.Fatalln("Unable to retrieve asset file", err)
 		}
 	} else {
-		templateBytes, err = ioutil.ReadFile(fmt.Sprintf("%s/%s",EmbeddedTemplatesDir,path))
+		templateBytes, err = ioutil.ReadFile(fmt.Sprintf("%s/%s", EmbeddedTemplatesDir, path))
 		if err != nil {
-			log.Fatalf("Unable to load template file %s/%s:%v",EmbeddedTemplatesDir,path, err)
+			log.Fatalf("Unable to load template file %s/%s:%v", EmbeddedTemplatesDir, path, err)
 		}
 	}
 	tmpl, err := template.New(name).Parse(string(templateBytes))
@@ -28,7 +28,5 @@ func ParseTemplate(name,path string) *template.Template {
 	}
 	return tmpl
 }
-
-
 
 const dirMode = 0755

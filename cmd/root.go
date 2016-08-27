@@ -22,7 +22,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
-//go:generate go-bindata -pkg cmd -o assets.go templates/
+
+//go:generate go-bindata -pkg cmd -o assets.go assets/
 
 var cfgFile string
 var TfDir, EnvName, OwnerName string
@@ -32,7 +33,6 @@ var OverWriteFiles bool
 //mostly a dev flag that allows me to switch off reading
 //templates from embedded assets or lcally
 var EmbeddedTemplatesDir string
-
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
@@ -44,9 +44,9 @@ examples and usage of using your application. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-// Uncomment the following line if your bare application
-// has an action associated with it:
-//	Run: func(cmd *cobra.Command, args []string) { },
+	// Uncomment the following line if your bare application
+	// has an action associated with it:
+	//	Run: func(cmd *cobra.Command, args []string) { },
 }
 
 // Execute adds all child commands to the root command sets flags appropriately.
@@ -60,7 +60,6 @@ func Execute() {
 
 var homeDir = os.Getenv("HOME")
 
-
 func init() {
 
 	// Here you will define your flags and configuration settings.
@@ -68,18 +67,17 @@ func init() {
 	// will be global for your application.
 
 	RootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c",
-		filepath.Join(homeDir,".formterra","formterra.yml"), "config file")
+		filepath.Join(homeDir, ".formterra", "formterra.yml"), "config file")
 
 	RootCmd.PersistentFlags().StringVarP(&TfDir, "terraform-dir", "d",
-		filepath.Join(homeDir,".formterra","terraform"), "directory where generated terraform will go")
+		filepath.Join(homeDir, ".formterra", "terraform"), "directory where generated terraform will go")
 
-	RootCmd.PersistentFlags().BoolVar("overwrite", "w",
+	RootCmd.PersistentFlags().BoolP("overwrite", "w",
 		false, "if there is something already there, do we overwrite when we generate")
 
-	RootCmd.PersistentFlags().StringVarP(&EnvName, "env", "e","", "what environment name the resource should be tagged with ")
+	RootCmd.PersistentFlags().StringVarP(&EnvName, "env", "e", "", "what environment name the resource should be tagged with ")
 	RootCmd.PersistentFlags().StringVarP(&OwnerName, "owner", "o", "", "what owner should the resources be tagged with")
 	cobra.OnInitialize(initConfig)
-
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -87,7 +85,7 @@ func initConfig() {
 	if cfgFile != "" { // enable ability to specify config file via flag
 		viper.SetConfigFile(cfgFile)
 	}
-  viper.SetConfigType("yaml")
+	viper.SetConfigType("yaml")
 	// viper.SetConfigName("formterra.yml") // name of config file (without extension)
 	// viper.AddConfigPath("$HOME/.formterra")  // adding home directory as first search path
 

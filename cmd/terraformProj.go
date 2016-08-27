@@ -1,91 +1,62 @@
-package   cmd
+package cmd
 
 import (
-  "path/filepath"
-  "github.com/spf13/viper"
-  "io/ioutil"
+	"io/ioutil"
+	"log"
+	"os"
+	"path/filepath"
+
+	"github.com/spf13/viper"
 )
 
 func config(key string) string {
-  return viper.GetString(key)
+	return viper.GetString(key)
 }
 
-
+// TerraformLayer is usually a terraform "project", but that is built
+// on another layer
 type TerraformLayer struct {
-  RequiredVars []string
-  SourceUri string
-  Environment string
-  Name string
+	RequiredVars []string
+	SourceURI    string
+	Name         string
 }
 
 func (t *TerraformLayer) dir() string {
-  dirPath := filepath.Join(config("terraform-dir"),config("env"),t.Name)
-  err := os.MkdirAll(dirPath, dirMode)
-  if err != nil {
-    log.Fatalf("Unable to create directory at %s:%s", dirPath, err)
-  }
-  return dirPath
+	dirPath := filepath.Join(config("terraform-dir"), config("env"), t.Name)
+	err := os.MkdirAll(dirPath, dirMode)
+	if err != nil {
+		log.Fatalf("Unable to create directory at %s:%s", dirPath, err)
+	}
+	return dirPath
 }
 
+type makeargs struct {
+	TerraformLayer
+}
 
 func (t *TerraformLayer) makeMake() bool {
-
-  dir := t.dir()
-  finfo, err := os.Stat(filepath.Join(dir,"Makefile"))
-  if err != nil  || OverWriteFiles {
-    makeContents,err := Asset(filepath.Join("assets", "Makefile"))
+	dir := t.dir()
+	_, err := os.Stat(filepath.Join(dir, "Makefile"))
+	if err != nil || OverWriteFiles {
+		makeContents, err := Asset(filepath.Join("assets", "Makefile"))
 		if err != nil {
 			log.Fatalln("Unable to retrieve base Makefile file", err)
 		}
-    err = ioutil.WriteFile("/tmp/dat1", d1, 0644)
-    defer finfo.Close()
-
-    return true
-  }
-  return false
-}
-
-
-
-func makeMake(path String) {
-  finfo, err := os.Stat(filepath.Join(path,"Makefile"))
-  if err != nil {
-
-    // no such file or dir
-    return
-  }
-  if finfo.IsDir() {
-    // it's a file
-  } else {
-    // it's a directory
-  }
-
-
-
-}
-
-func terraformSkeleton(path string) {
-  templ := ParseTemplate("s3terraform", "s3.tf")
-  f := OpenForWrite("bucket","main.tf")
-  if err := templ.Execute(f, bucketRequest); err != nil {
-    log.Fatalln("Unable to generate template", err)
-  }
-}
-
-
-
-
-func OpenForWrite(modName,fileName string) *os.File {
-  dirPath := TerraformPath(modName)
-  err := os.MkdirAll(dirPath, dirMode)
-  if err != nil {
-		log.Fatalf("Unable to create directory at %s:%s", dirPath, err)
+		err = ioutil.WriteFile(filepath.Join(dir, "Makefile"), makeContents, 0644)
+		if err != nil {
+			log.Fatalln("Unable to create Makefile", err)
+		}
+		return true
 	}
+	return false
+}
 
-	file := filepath.Join(dirPath, fileName)
-	f, err := os.Create(file)
-  if err != nil {
-		log.Fatalf("Unable to create file at %s:%v", file, err)
+func (t *TerraformLayer) openForWrite(fileName string) *os.File {
+	dir := t.dir()
+	file, err := os.Create(filepath.Join(dir, fileName))
+	//TODO test overwrite?
+	if err != nil {
+		log.Fatalf("Unable to create file at %s:%v", fileName, err)
 	}
-  return f
+	return file
 }

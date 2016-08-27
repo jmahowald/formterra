@@ -4,7 +4,7 @@ SOURCES := $(shell find $(SOURCEDIR) -type f -name '*.go')
 BINARY=formterra
 
 ASSETS=cmd/assets.go
-ASSET_SOURCES := $(wildcard cmd/templates/*)
+ASSET_SOURCES := $(wildcard cmd/assets/*)
 
 # H/T https://ariejan.net/2015/10/03/a-makefile-for-golang-cli-tools/
 # VERSION=1.0.0
