@@ -104,7 +104,7 @@ func assetsS3Tf() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/s3.tf", size: 905, mode: os.FileMode(420), modTime: time.Unix(1472227085, 0)}
+	info := bindataFileInfo{name: "assets/s3.tf", size: 905, mode: os.FileMode(420), modTime: time.Unix(1472395036, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

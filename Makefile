@@ -3,7 +3,7 @@ SOURCES := $(shell find $(SOURCEDIR) -type f -name '*.go')
 # ASSETS := $(shell find $())
 BINARY=formterra
 
-ASSETS=assets.go
+ASSETS=tfproject/assets.go
 ASSET_SOURCES := $(wildcard tfproject/assets/*)
 
 # H/T https://ariejan.net/2015/10/03/a-makefile-for-golang-cli-tools/
@@ -31,10 +31,9 @@ clean:
 $(ASSETS): $(ASSET_SOURCES)
 	go generate -x ./tfproject
 
-build:
-	go build
 
-test:
+
+test: $(BINARY)
 	cd tfproject ; go test .
 
 # TODO make this look into asssest directory

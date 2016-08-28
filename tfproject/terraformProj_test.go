@@ -66,6 +66,7 @@ func (s *MySuite) TestBucket(c *C) {
 
 	expectedFile := filepath.Join(testdir, "test", "bucket", "s3.tf")
 	fileExists(expectedFile, c)
+	fileExists(filepath.Join(testdir, "test", "bucket", "Makefile"), c)
 
 	// tf := cmd.
 
