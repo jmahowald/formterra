@@ -7,12 +7,12 @@ type S3BucketRequest struct {
 	UnVersioned bool
 }
 
-// TerraformS3  creates a terraform project from a bucket request
-func TerraformS3(bucketRequest S3BucketRequest) TerraformGeneratedProject {
-	layer := TerraformLayer{Name: "bucket"}
-	s3Proj := TemplatedTerraformProjects{
-		TerraformLayer: layer,
-		Templates:      []string{"s3.tf"},
+func (s S3BucketRequest) Create() (TerraformLayer, bool) {
+
+	request := BuiltInTerraformProjectRequest{
+		name:      "bucket_" + s.BucketName,
+		templates: []string{"s3.tf"},
+		data:      s,
 	}
-	return s3Proj
+	return request.Create()
 }

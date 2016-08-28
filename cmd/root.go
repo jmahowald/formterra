@@ -22,7 +22,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 
 	"github.com/jmahowald/formterra/core"
-	"github.com/jmahowald/formterra/tfproject"
+	tf "github.com/jmahowald/formterra/tfproject"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -31,14 +31,7 @@ import (
 // "github.com/prometheus/common/log"
 
 var cfgFile string
-var EnvName, OwnerName string
 var debugLogging bool
-
-var OverWriteFiles bool
-
-//mostly a dev flag that allows me to switch off reading
-//templates from embedded assets or lcally
-var EmbeddedTemplatesDir string
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
@@ -91,15 +84,15 @@ func init() {
 		filepath.Join(homeDir, ".formterra", "formterra.yml"), "config file")
 	RootCmd.PersistentFlags().BoolVar(&debugLogging, "debug", false, "turn on debug")
 
-	RootCmd.PersistentFlags().StringP(tfproject.TerraformDir, "d",
+	RootCmd.PersistentFlags().StringP(tf.TerraformDir, "d",
 		filepath.Join(homeDir, ".formterra", "terraform"), "directory where generated terraform will go")
 
 	//TODO should use a contant
-	RootCmd.PersistentFlags().BoolP(tfproject.Overwrite, "w",
+	RootCmd.PersistentFlags().BoolP(tf.Overwrite, "w",
 		false, "if there is something already there, do we overwrite when we generate")
 
-	RootCmd.PersistentFlags().StringVarP(&EnvName, "env", "e", "", "what environment name the resource should be tagged with ")
-	RootCmd.PersistentFlags().StringVarP(&OwnerName, "owner", "o", "", "what owner should the resources be tagged with")
+	RootCmd.PersistentFlags().StringP(tf.Env, "e", "", "what environment name the resource should be tagged with ")
+	RootCmd.PersistentFlags().StringP(tf.Owner, "o", "", "what owner should the resources be tagged with")
 	cobra.OnInitialize(initConfig)
 
 	RootCmd.AddCommand(versionCommand)
@@ -118,10 +111,10 @@ func initConfig() {
 	//TODO figure out what this means
 	//viper.AutomaticEnv()          // read in environment variables that match
 
-	viper.BindPFlag("owner", RootCmd.PersistentFlags().Lookup("owner"))
-	viper.BindPFlag("terraform-dir", RootCmd.PersistentFlags().Lookup("terraform-dir"))
-	viper.BindPFlag("env", RootCmd.PersistentFlags().Lookup("env"))
-	viper.BindPFlag("overwrite", RootCmd.PersistentFlags().Lookup("overwrite"))
+	viper.BindPFlag(tf.Owner, RootCmd.PersistentFlags().Lookup(tf.Owner))
+	viper.BindPFlag(tf.TerraformDir, RootCmd.PersistentFlags().Lookup(tf.TerraformDir))
+	viper.BindPFlag(tf.Env, RootCmd.PersistentFlags().Lookup(tf.Env))
+	viper.BindPFlag(tf.Overwrite, RootCmd.PersistentFlags().Lookup(tf.Overwrite))
 
 	// viper.BindPFlag("useViper", RootCmd.PersistentFlags().Lookup("viper"))
 	// viper.SetDefault("author", "NAME HERE <EMAIL ADDRESS>")

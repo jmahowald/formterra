@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	log "github.com/Sirupsen/logrus"
+
 	"github.com/spf13/viper"
 	// I use this instead of base testing Suite
 	// to bring back warm fuzzies of junit
@@ -35,6 +37,9 @@ func fileExists(path string, c *C) {
 
 func (s *MySuite) SetUpSuite(c *C) {
 	testdir = "./target"
+	log.SetLevel(log.DebugLevel)
+	//Cleanup if around from old test
+	os.RemoveAll(testdir)
 	os.MkdirAll(testdir, 0755)
 	viper.Set(TerraformDir, testdir)
 	viper.Set("env", "test")
@@ -47,7 +52,7 @@ func (s *MySuite) TearDownTest(c *C) {
 
 func (s *MySuite) TearDownSuite(c *C) {
 	if !failure {
-		// os.RemoveAll(testdir)
+		os.RemoveAll(testdir)
 	} else {
 		c.Log("Failures, please examine:", testdir)
 	}
@@ -55,18 +60,17 @@ func (s *MySuite) TearDownSuite(c *C) {
 
 func (s *MySuite) TestBucket(c *C) {
 	req := S3BucketRequest{
-		BucketName:  "testbucket",
+		BucketName:  "testingbucket",
 		UnVersioned: true,
 		Fqdn:        "my.test",
 	}
-
-	tf := TerraformS3(req)
-	// Hmm, this smells like I should be capturing the request in the object
-	tf.Write(req)
-
-	expectedFile := filepath.Join(testdir, "test", "bucket", "s3.tf")
+	_, exists := req.Create()
+	if exists {
+		c.Error("Bucket requeset already existed")
+	}
+	expectedFile := filepath.Join(testdir, "test", "bucket_testingbucket", "s3.tf")
 	fileExists(expectedFile, c)
-	fileExists(filepath.Join(testdir, "test", "bucket", "Makefile"), c)
+	fileExists(filepath.Join(testdir, "test", "bucket_testingbucket", "Makefile"), c)
 
 	// tf := cmd.
 

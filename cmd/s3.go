@@ -35,8 +35,7 @@ type S3BucketRequest struct {
 var bucketRequest tf.S3BucketRequest
 
 func render(bucketRequest tf.S3BucketRequest) {
-	tf := tf.TerraformS3(bucketRequest)
-	tf.Write(bucketRequest)
+	bucketRequest.Create()
 }
 
 var dryNum = true

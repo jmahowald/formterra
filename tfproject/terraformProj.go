@@ -12,13 +12,6 @@ import (
 
 const dirMode = 0755
 
-// Overwrite flag setting in config on whether we default overwrite files if they
-// exist
-const Overwrite = "overwrite"
-
-// TerraformDir Property Name to overwrite where to store the generated terraform
-const TerraformDir = "terraform-dir"
-
 // TerraformGeneratedProject indicates a terraform project that this
 // tool has generated (which means we can safely write in our own contents)
 type TerraformGeneratedProject interface {
@@ -57,8 +50,8 @@ type TerraformLayer struct {
 // }
 
 type BuiltInTerraformProjectRequest struct {
-	TerraformLayer
-	Templates []string
+	name      string
+	templates []string
 	data      interface{}
 }
 
@@ -69,17 +62,32 @@ type TemplatedTerraformProjects struct {
 	Templates []string
 }
 
-func (t TemplatedTerraformProjects) Write(data interface{}) {
-	t.write()
-	for index, element := range t.Templates {
-		log.Debug("Processing template:", element)
-		tpl := parseTemplate(t.Name+"."+string(index), element)
-		f := t.openForWrite(element)
-		if err := tpl.Execute(f, data); err != nil {
-			log.Fatalln("Unable to generate template:", element, err)
+func (req BuiltInTerraformProjectRequest) Create() (TerraformLayer, bool) {
+	log.Debug("Attempting to create:", req)
+	fullPath, exists := layerExists(req.name)
+	if !exists {
+		err := os.MkdirAll(fullPath, dirMode)
+		if err != nil {
+			log.Fatalf("Unable to create directory at %s:%s", fullPath, err)
 		}
 	}
 
+	layer := TerraformLayer{Name: req.name}
+	if !exists || isSet(Overwrite) {
+		log.Debug("Writing out project to ", fullPath)
+		layer.makeMake()
+		for index, element := range req.templates {
+			log.Debug("Processing template:", element)
+			tpl := parseTemplate(layer.Name+"."+string(index), element)
+			f := layer.openForWrite(element)
+			if err := tpl.Execute(f, req.data); err != nil {
+				log.Fatalln("Unable to generate template:", element, err)
+			}
+		}
+	} else {
+		log.Info("Directory exists, and overwrite is not set")
+	}
+	return layer, exists
 }
 
 // ParseTemplate
@@ -118,37 +126,25 @@ var funcMap = template.FuncMap{
 // 	return cmd, nil
 // }
 
-func (t *TerraformLayer) write() bool {
-	dir, isNew := t.dir()
-	if isNew || TfConfig.IsSet(Overwrite) {
-		log.Debug("Writing out project to ", dir)
-		t.makeMake()
-		return true
-	}
-	log.Info("Directory exists, and overwrite is not set")
-	return false
+func layerExists(path string) (string, bool) {
+	dirPath := filepath.Join(getString(TerraformDir),
+		getString("env"), path)
+	_, err := os.Stat(dirPath)
+	return dirPath, (err == nil)
 }
 
 func (t *TerraformLayer) dir() (string, bool) {
-	dirPath := filepath.Join(TfConfig.GetString(TerraformDir),
-		TfConfig.GetString("env"), t.Name)
+	dirPath := filepath.Join(getString(TerraformDir),
+		getString("env"), t.Name)
 
 	_, err := os.Stat(dirPath)
-	if err != nil {
-		log.Debug("No existing project, generating dir for", dirPath)
-		err := os.MkdirAll(dirPath, dirMode)
-		if err != nil {
-			log.Fatalf("Unable to create directory at %s:%s", dirPath, err)
-		}
-		return dirPath, true
-	}
-	return dirPath, false
+	return dirPath, err == nil
 }
 
 func (t *TerraformLayer) makeMake() bool {
 	dir, _ := t.dir()
 	_, err := os.Stat(filepath.Join(dir, "Makefile"))
-	if err != nil || TfConfig.IsSet(Overwrite) {
+	if err != nil || isSet(Overwrite) {
 		makeContents, err := Asset(filepath.Join("assets", "Makefile"))
 		if err != nil {
 			log.Fatalln("Unable to retrieve base Makefile file", err)
