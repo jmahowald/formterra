@@ -26,7 +26,7 @@ resource "aws_s3_bucket" "default" {
               days = 90
           }
       }
-      
+
     {{ end }}
 }
 

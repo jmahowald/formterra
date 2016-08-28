@@ -12,12 +12,6 @@ import (
 
 const dirMode = 0755
 
-// TerraformGeneratedProject indicates a terraform project that this
-// tool has generated (which means we can safely write in our own contents)
-type TerraformGeneratedProject interface {
-	Write(data interface{})
-}
-
 // TerraformProject something that we can see the plan for, apply, and destroy
 type TerraformProject interface {
 	Plan() exec.Cmd
@@ -25,10 +19,8 @@ type TerraformProject interface {
 	Destroy() exec.Cmd
 }
 
-type makeable interface {
-}
-
-type terraformProjectRequest interface {
+//TerraformProjectRequest Can create a terraform layer for u
+type TerraformProjectRequest interface {
 	Create() (TerraformLayer, bool)
 }
 
@@ -44,24 +36,15 @@ type TerraformLayer struct {
 	// SourceURI    string
 }
 
-// type projectRequest struct {
-// 	data interface{}
-// 	TerraformGeneratedProject
-// }
-
+//BuiltInTerraformProjectRequest we already have the defintiion of the templates
+//because they are embedded in the tool
 type BuiltInTerraformProjectRequest struct {
 	name      string
 	templates []string
 	data      interface{}
 }
 
-// TemplatedTerraformProjects terraform projects that are
-// embedded within this tool
-type TemplatedTerraformProjects struct {
-	TerraformLayer
-	Templates []string
-}
-
+//Create builds layer by executing all of the templates
 func (req BuiltInTerraformProjectRequest) Create() (TerraformLayer, bool) {
 	log.Debug("Attempting to create:", req)
 	fullPath, exists := layerExists(req.name)

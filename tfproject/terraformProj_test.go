@@ -58,38 +58,32 @@ func (s *MySuite) TearDownSuite(c *C) {
 	}
 }
 
+func check(c *C, err error, msg ...string) {
+	if err != nil {
+		c.Error(msg)
+	}
+}
+
+// func check(trutc *C)
 func (s *MySuite) TestBucket(c *C) {
 	req := S3BucketRequest{
 		BucketName:  "testingbucket",
 		UnVersioned: true,
 		Fqdn:        "my.test",
 	}
-	_, exists := req.Create()
+	layer, exists := req.Create()
 	if exists {
 		c.Error("Bucket requeset already existed")
 	}
 	expectedFile := filepath.Join(testdir, "test", "bucket_testingbucket", "s3.tf")
 	fileExists(expectedFile, c)
 	fileExists(filepath.Join(testdir, "test", "bucket_testingbucket", "Makefile"), c)
-
-	// tf := cmd.
-
-	//
-	// req := S3BucketRequest(Org)
-	//
-	// tf :-= TerraformS3(S3BucketRequest{
-	//   Buck
-	// })
-	// func Render(bucketRequest S3BucketRequest) {
-	//
-	// 	layer := tf.TerraformLayer{Name: "bucket"}
-	// 	s3Proj := tf.PredefinedTerraformProjects{
-	// 		TerraformLayer: layer,
-	// 		Templates:      []string{"s3.tf"},
-	// 	}
-	// 	s3Proj.Write(bucketRequest)
-	// }
-
+	plan, err := layer.PlanCommand()
+	check(c, err, "Couldn't get make command")
+	plan.Stdout = os.Stdout
+	plan.Stderr = os.Stderr
+	err = plan.Run()
+	check(c, err, "Problems running plan")
 }
 
 // any approach to require this configuration into your program.
