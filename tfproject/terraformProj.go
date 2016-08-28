@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 
 	log "github.com/Sirupsen/logrus"
@@ -15,10 +16,27 @@ const dirMode = 0755
 // exist
 const Overwrite = "overwrite"
 
+// TerraformDir Property Name to overwrite where to store the generated terraform
+const TerraformDir = "terraform-dir"
+
 // TerraformGeneratedProject indicates a terraform project that this
 // tool has generated (which means we can safely write in our own contents)
 type TerraformGeneratedProject interface {
-	Write(data interface{}) (bool, error)
+	Write(data interface{})
+}
+
+// TerraformProject something that we can see the plan for, apply, and destroy
+type TerraformProject interface {
+	Plan() exec.Cmd
+	Apply() exec.Cmd
+	Destroy() exec.Cmd
+}
+
+type makeable interface {
+}
+
+type terraformProjectRequest interface {
+	Create() (TerraformLayer, bool)
 }
 
 // TfConfig configuration for this project.  By default uses viper
@@ -33,14 +51,25 @@ type TerraformLayer struct {
 	// SourceURI    string
 }
 
-// PredefinedTerraformProjects terraform projects that are
+// type projectRequest struct {
+// 	data interface{}
+// 	TerraformGeneratedProject
+// }
+
+type BuiltInTerraformProjectRequest struct {
+	TerraformLayer
+	Templates []string
+	data      interface{}
+}
+
+// TemplatedTerraformProjects terraform projects that are
 // embedded within this tool
-type PredefinedTerraformProjects struct {
+type TemplatedTerraformProjects struct {
 	TerraformLayer
 	Templates []string
 }
 
-func (t *PredefinedTerraformProjects) Write(data interface{}) {
+func (t TemplatedTerraformProjects) Write(data interface{}) {
 	t.write()
 	for index, element := range t.Templates {
 		log.Debug("Processing template:", element)
@@ -77,6 +106,18 @@ var funcMap = template.FuncMap{
 	"GetString": getString,
 }
 
+//
+// func command(t *TerraformLayer, command string, args ...string) (exec.Cmd, error) {
+// 	bin, err := exec.LookPath(command)
+// 	if err != nil {
+// 		log.Warn("Could not find in path:", command, err)
+// 		return exec.Cmd{}, err
+// 	}
+// 	dir, _ := t.dir()
+// 	cmd := exec.Cmd{Path: bin, Dir: dir, Args: args}
+// 	return cmd, nil
+// }
+
 func (t *TerraformLayer) write() bool {
 	dir, isNew := t.dir()
 	if isNew || TfConfig.IsSet(Overwrite) {
@@ -89,7 +130,7 @@ func (t *TerraformLayer) write() bool {
 }
 
 func (t *TerraformLayer) dir() (string, bool) {
-	dirPath := filepath.Join(TfConfig.GetString("terraform-dir"),
+	dirPath := filepath.Join(TfConfig.GetString(TerraformDir),
 		TfConfig.GetString("env"), t.Name)
 
 	_, err := os.Stat(dirPath)

@@ -19,7 +19,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/Sirupsen/logrus"
+	log "github.com/Sirupsen/logrus"
 
 	"github.com/jmahowald/formterra/core"
 	"github.com/jmahowald/formterra/tfproject"
@@ -28,9 +28,12 @@ import (
 	"github.com/spf13/viper"
 )
 
+// "github.com/prometheus/common/log"
+
 var cfgFile string
-var TfDir, EnvName, OwnerName string
+var EnvName, OwnerName string
 var debugLogging bool
+
 var OverWriteFiles bool
 
 //mostly a dev flag that allows me to switch off reading
@@ -51,7 +54,7 @@ to quickly create a Cobra application.`,
 	// Set logging for all commands
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		if debugLogging {
-			logrus.SetLevel(logrus.DebugLevel)
+			log.SetLevel(log.DebugLevel)
 		}
 	},
 
@@ -88,7 +91,7 @@ func init() {
 		filepath.Join(homeDir, ".formterra", "formterra.yml"), "config file")
 	RootCmd.PersistentFlags().BoolVar(&debugLogging, "debug", false, "turn on debug")
 
-	RootCmd.PersistentFlags().StringVarP(&TfDir, "terraform-dir", "d",
+	RootCmd.PersistentFlags().StringP(tfproject.TerraformDir, "d",
 		filepath.Join(homeDir, ".formterra", "terraform"), "directory where generated terraform will go")
 
 	//TODO should use a contant
@@ -125,6 +128,6 @@ func initConfig() {
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+		log.Info("Using config file:", viper.ConfigFileUsed())
 	}
 }

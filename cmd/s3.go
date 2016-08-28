@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"os"
 
+	log "github.com/Sirupsen/logrus"
 	tf "github.com/jmahowald/formterra/tfproject"
 	"github.com/spf13/cobra"
 )
@@ -31,37 +32,34 @@ type S3BucketRequest struct {
 	UnVersioned bool
 }
 
-var bucketRequest S3BucketRequest
+var bucketRequest tf.S3BucketRequest
 
-func render(bucketRequest S3BucketRequest) {
-
-	layer := tf.TerraformLayer{Name: "bucket"}
-	s3Proj := tf.PredefinedTerraformProjects{
-		TerraformLayer: layer,
-		Templates:      []string{"s3.tf"},
-	}
-	s3Proj.Write(bucketRequest)
+func render(bucketRequest tf.S3BucketRequest) {
+	tf := tf.TerraformS3(bucketRequest)
+	tf.Write(bucketRequest)
 }
 
 var dryNum = true
 var s3Cmd = cobra.Command{
-	Use:   "s3 <bucket_name>",
-	Short: "Creates s3 buckets using terraform",
+	Use:   "s3 <command>",
+	Short: "Manipulates s3 buckets using terraform",
 	Long: `Generates terraform necessary to create an s3 bucket
 	this allows us to more finely tune
 	`,
-	Run: func(cmd *cobra.Command, args []string) {
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		if bucketRequest.BucketName == "" {
-			fmt.Println("You must provide a bucket name")
+			log.Error("You must provide a bucket name")
 			cmd.Usage()
 			return
 		}
 		if bucketRequest.Fqdn == "" {
-			fmt.Println("You must provide fqdn for the bucket")
+			log.Error("You must provide fqdn for the bucket")
+			cmd.Usage()
 			return
 		}
-		// TODO: Work your own magic here
-		fmt.Println("s3 called")
+	},
+
+	Run: func(cmd *cobra.Command, args []string) {
 		render(bucketRequest)
 	},
 }

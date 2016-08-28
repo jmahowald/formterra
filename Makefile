@@ -34,5 +34,7 @@ $(ASSETS): $(ASSET_SOURCES)
 build:
 	go build
 
+test:
+	cd tfproject ; go test .
 
 # TODO make this look into asssest directory
