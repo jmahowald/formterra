@@ -7,7 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/prometheus/common/log"
+	log "github.com/Sirupsen/logrus"
 )
 
 // just because in general that's best practice IMO

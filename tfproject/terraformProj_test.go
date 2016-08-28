@@ -39,10 +39,11 @@ func (s *MySuite) SetUpSuite(c *C) {
 	testdir = "./target"
 	log.SetLevel(log.DebugLevel)
 	//Cleanup if around from old test
-	os.RemoveAll(testdir)
+	// os.RemoveAll(testdir)
 	os.MkdirAll(testdir, 0755)
 	viper.Set(TerraformDir, testdir)
 	viper.Set("env", "test")
+
 }
 
 func (s *MySuite) TearDownTest(c *C) {
@@ -60,12 +61,13 @@ func (s *MySuite) TearDownSuite(c *C) {
 
 func check(c *C, err error, msg ...string) {
 	if err != nil {
-		c.Error(msg)
+		c.Error(msg, err)
 	}
 }
 
 // func check(trutc *C)
 func (s *MySuite) TestBucket(c *C) {
+	c.Skip("Temporarily off to speed up testing")
 	req := S3BucketRequest{
 		BucketName:  "testingbucket",
 		UnVersioned: true,
@@ -84,6 +86,16 @@ func (s *MySuite) TestBucket(c *C) {
 	plan.Stderr = os.Stderr
 	err = plan.Run()
 	check(c, err, "Problems running plan")
+}
+
+func (s *MySuite) TestRetreival(c *C) {
+	module := ExternalModule{Uri: "./test-fixtures/simpleterraform"}
+	projectDef, err := module.fetch()
+	check(c, err, "couldn't get local module")
+	c.Assert(projectDef.Name, Equals, "simpleterraform")
+	c.Assert(projectDef.RequiredVars, HasLen, 1)
+	c.Assert(projectDef.RequiredVars, DeepEquals, []string{"location"})
+
 }
 
 // any approach to require this configuration into your program.
