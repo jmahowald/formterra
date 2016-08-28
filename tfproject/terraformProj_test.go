@@ -89,7 +89,7 @@ func (s *MySuite) TestBucket(c *C) {
 }
 
 func (s *MySuite) TestRetreival(c *C) {
-	module := ExternalModule{Uri: "./test-fixtures/simpleterraform"}
+	module := ExternalModule{URI: "./test-fixtures/simpleterraform"}
 	projectDef, err := module.fetch()
 	check(c, err, "couldn't get local module")
 	c.Assert(projectDef.Name, Equals, "simpleterraform")

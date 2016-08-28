@@ -9,9 +9,10 @@ import (
 	getter "github.com/hashicorp/go-getter"
 )
 
+//ExternalModule  a terraform module that isn't baked into this project
 type ExternalModule struct {
 	Name string
-	Uri  string
+	URI  string
 }
 
 var externaldirname = "external"
@@ -19,6 +20,7 @@ var externaldirname = "external"
 func externaldir() string {
 	return path.Join(getString(TerraformDir), externaldirname)
 }
+
 func (m ExternalModule) fetch() (TerraformProjectDefinition, error) {
 	projectDef := TerraformProjectDefinition{}
 	log.Debug("Attempting to retrieve:", m)
@@ -28,13 +30,13 @@ func (m ExternalModule) fetch() (TerraformProjectDefinition, error) {
 		log.Warn("Couldn't get current working directory")
 		return projectDef, err
 	}
-	srcURI, err := getter.Detect(m.Uri, wd, getter.Detectors)
+	srcURI, err := getter.Detect(m.URI, wd, getter.Detectors)
 	if err != nil {
-		log.Warn("Could not detect location of", m.Uri, err)
+		log.Warn("Could not detect location of", m.URI, err)
 	}
 	log.Debug("source uri is ", srcURI)
 
-	if projectDef.Name != "" {
+	if projectDef.Name == "" {
 		projectDef.Name = path.Base(srcURI)
 	}
 

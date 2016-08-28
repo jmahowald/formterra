@@ -7,6 +7,7 @@ type S3BucketRequest struct {
 	UnVersioned bool
 }
 
+// Create Creates a terraform layer to create an s3 bucket
 func (s S3BucketRequest) Create() (TerraformLayer, bool) {
 
 	request := BuiltInTerraformProjectRequest{
