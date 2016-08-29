@@ -31,6 +31,7 @@ var TfConfig = viperConfig
 type TerraformProjectDefinition struct {
 	Name         string
 	RequiredVars []string
+	OptionalVars []string
 	location     string
 }
 

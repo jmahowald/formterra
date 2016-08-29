@@ -92,6 +92,7 @@ func (s *MySuite) TestRetreival(c *C) {
 	module := ExternalModule{URI: "./test-fixtures/simpleterraform"}
 	projectDef, err := module.fetch()
 	check(c, err, "couldn't get local module")
+	log.Debug("Project def:", projectDef)
 	c.Assert(projectDef.Name, Equals, "simpleterraform")
 	c.Assert(projectDef.RequiredVars, HasLen, 1)
 	c.Assert(projectDef.RequiredVars, DeepEquals, []string{"location"})
