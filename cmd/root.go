@@ -124,3 +124,9 @@ func initConfig() {
 		log.Info("Using config file:", viper.ConfigFileUsed())
 	}
 }
+
+func fail(msg string, cmd *cobra.Command) {
+	fmt.Println(msg)
+	cmd.Usage()
+	os.Exit(-1)
+}

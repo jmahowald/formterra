@@ -15,9 +15,6 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
-
 	log "github.com/Sirupsen/logrus"
 	tf "github.com/jmahowald/formterra/tfproject"
 	"github.com/spf13/cobra"
@@ -45,10 +42,9 @@ var s3Cmd = cobra.Command{
 	Long: `Generates terraform necessary to create an s3 bucket
 	this allows us to more finely tune
 	`,
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+	PreRun: func(cmd *cobra.Command, args []string) {
 		if bucketRequest.BucketName == "" {
-			log.Error("You must provide a bucket name")
-			cmd.Usage()
+			fail("You must provide a bucket name", cmd)
 			return
 		}
 		if bucketRequest.Fqdn == "" {
@@ -63,11 +59,6 @@ var s3Cmd = cobra.Command{
 	},
 }
 
-func fail(msg string) {
-	fmt.Println(msg)
-	s3Cmd.Usage()
-	os.Exit(-1)
-}
 func init() {
 	RootCmd.AddCommand(&s3Cmd)
 
