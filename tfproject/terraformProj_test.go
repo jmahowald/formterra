@@ -69,9 +69,8 @@ func check(c *C, err error, msg ...string) {
 func (s *MySuite) TestBucket(c *C) {
 	c.Skip("Temporarily off to speed up testing")
 	req := S3BucketRequest{
-		BucketName:  "testingbucket",
-		UnVersioned: true,
-		Fqdn:        "my.test",
+		S3BucketID{"testingbucket", "my.test"},
+		true,
 	}
 	layer, exists := req.Create()
 	if exists {
