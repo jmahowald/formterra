@@ -1,14 +1,15 @@
 package tfproject
 
 import (
+	"fmt"
 	"os"
 	"path"
-	"reflect"
+	"path/filepath"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
-
+	// set "github.com/deckarep/golang-set"
 	getter "github.com/hashicorp/go-getter"
 )
 
@@ -27,7 +28,7 @@ func externaldir() string {
 }
 
 // grabs the remote definition (which might be local)
-func (m ExternalModule) fetch() (TerraformProjectDefinition, error) {
+func (m ExternalModule) Fetch() (TerraformProjectDefinition, error) {
 	projectDef := TerraformProjectDefinition{}
 	log.Debug("Attempting to retrieve:", m)
 
@@ -88,10 +89,10 @@ func findRequiredAndOptionalVars(vars terraformvars) projectVars {
 			} else {
 				for _, key := range varkeys {
 					if _, hasDefault := key["default"]; hasDefault {
-						log.Debug("Found variable with default key", varname)
+						log.Debug("Found variable with default key:", varname)
 						optional = append(optional, varname)
 					} else {
-						log.Debug("Found variable without key", varname)
+						log.Debug("Found variable without key:", varname)
 						required = append(required, varname)
 					}
 				}
@@ -116,21 +117,29 @@ func (t *TerraformProjectDefinition) loadVars() error {
 		return err
 	}
 
-	varConfig := viper.New()
-	varConfig.SetConfigFile(variablesFile)
-	varConfig.SetConfigType("hcl")
-	varConfig.ReadInConfig()
-	varConfig.Debug()
+	files, _ := filepath.Glob(fmt.Sprintf("%s/*.tf", t.location))
 
-	vars := varConfig.Get("variable")
-	log.Debug("Vars loaded are:", reflect.TypeOf(vars), vars)
+	for _, tfFile := range files {
+		varConfig := viper.New()
 
-	var variableContents terraformvars
-	mapstructure.Decode(vars, &variableContents)
-	log.Debug("Variable Contents:", variableContents)
-	projectVarDef := findRequiredAndOptionalVars(variableContents)
-	t.RequiredVars = projectVarDef.required
-	t.OptionalVars = projectVarDef.optional
+		log.Debug("parsing %s", tfFile)
+		varConfig.SetConfigFile(tfFile)
+		varConfig.SetConfigType("hcl")
+		varConfig.ReadInConfig()
+
+		vars := varConfig.Get("variable")
+
+		var variableContents terraformvars
+		mapstructure.Decode(vars, &variableContents)
+		varLists := findRequiredAndOptionalVars(variableContents)
+
+		log.Debug("required vars are:", varLists.required)
+		log.Debug("optional vars are:", varLists.optional)
+
+		t.RequiredVars = append(t.RequiredVars, varLists.required...)
+		t.OptionalVars = append(t.RequiredVars, varLists.optional...)
+
+	}
 
 	return nil
 }
