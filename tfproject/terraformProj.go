@@ -27,14 +27,6 @@ type TerraformProjectRequest interface {
 // TfConfig configuration for this project.  By default uses viper
 var TfConfig = viperConfig
 
-//TerraformProjectDefinition Base object for working with terraform projects
-type TerraformProjectDefinition struct {
-	Name         string
-	RequiredVars []string
-	OptionalVars []string
-	location     string
-}
-
 // TerraformLayer is usually a terraform "project", but that is built
 // on another layer
 type TerraformLayer struct {

@@ -39,7 +39,7 @@ func (s *MySuite) SetUpSuite(c *C) {
 	testdir = "./target"
 	log.SetLevel(log.DebugLevel)
 	//Cleanup if around from old test
-	// os.RemoveAll(testdir)
+	os.RemoveAll(testdir)
 	os.MkdirAll(testdir, 0755)
 	viper.Set(TerraformDir, testdir)
 	viper.Set("env", "test")
@@ -88,31 +88,24 @@ func (s *MySuite) TestBucket(c *C) {
 }
 
 func (s *MySuite) TestRetreival(c *C) {
+
+	// jsonexample := "examples"
+
 	module := ExternalModule{URI: "./test-fixtures/simpleterraform"}
-	projectDef, err := module.fetch()
+	projectDef, err := module.Fetch()
 	check(c, err, "couldn't get local module")
 	log.Debug("Project def:", projectDef)
 	c.Assert(projectDef.Name, Equals, "simpleterraform")
 	c.Assert(projectDef.RequiredVars, HasLen, 1)
 	c.Assert(projectDef.RequiredVars, DeepEquals, []string{"location"})
-
 }
 
-// any approach to require this configuration into your program.
-var yamlExample = []byte(`
+func (s *MySuite) TestModuleClient(c *C) {
+	generateModule("./test-fixtures/dcos", "mesos")
+	expectedFile := filepath.Join(testdir, "test", "mesos", "module_client.tf")
+	fileExists(expectedFile, c)
 
-Hacker: true
-name: steve
-hobbies:
-- skateboarding
-- go
-clothing:
-  jacket: leather
-  trousers: denim
-age: 35
-eyes : brown
-beard: true
-`)
+}
 
 // func (s *MySuite) TestHelloWorld(c *C) {
 // 	c.Assert(42, Equals, "42")

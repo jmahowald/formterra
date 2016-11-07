@@ -111,12 +111,6 @@ func findRequiredAndOptionalVars(vars terraformvars) projectVars {
 
 func (t *TerraformProjectDefinition) loadVars() error {
 
-	variablesFile := path.Join(t.location, "variables.tf")
-	if _, err := os.Stat(variablesFile); err != nil {
-		log.Info("No variables.tf in:", t.location)
-		return err
-	}
-
 	files, _ := filepath.Glob(fmt.Sprintf("%s/*.tf", t.location))
 
 	for _, tfFile := range files {
@@ -145,5 +139,5 @@ func (t *TerraformProjectDefinition) loadVars() error {
 }
 
 func init() {
-	os.MkdirAll(externaldir(), 0755)
+	os.MkdirAll(externaldir(), 0700)
 }
