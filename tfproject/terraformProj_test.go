@@ -141,13 +141,30 @@ func (s *MySuite) TestModuleMarshalling(c *C) {
 			FromModuleMappings{
 				"mod2",
 				[]BasicVariableMapping{
-					BasicVariableMapping{"mod2_out", "foo"},
+					BasicVariableMapping{"foo", "mod2_out"},
 					BasicVariableMapping{VarName: "bar"},
 				},
 			},
+			FromModuleMappings{
+				"mod3",
+				[]BasicVariableMapping{
+					BasicVariableMapping{"value3", "mod3var"},
+				},
+			},
 		},
-		[]FromRemoteMappings{},
-		[]BasicVariableMapping{},
+		[]FromRemoteMappings{
+			FromRemoteMappings{
+				"vpc_layer",
+				[]BasicVariableMapping{
+					BasicVariableMapping{"foo", "remote1_out"},
+					BasicVariableMapping{"bar2", "mod3var"},
+				},
+			},
+		},
+		[]BasicVariableMapping{
+			BasicVariableMapping{"var1_out", "var1_in"},
+			BasicVariableMapping{VarName: "bar3"},
+		},
 	}
 
 	expectedProj := TerraformProjectSkeleton{
@@ -165,7 +182,7 @@ func (s *MySuite) TestModuleMarshalling(c *C) {
 
 	// log.Infof("Output yaml is", string(yamlOut))
 
-	c.Assert(proj, Equals, expectedProj)
+	c.Assert(proj, DeepEquals, expectedProj)
 }
 
 func (s *MySuite) TestProjectGeneration(c *C) {
