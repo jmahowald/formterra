@@ -6,6 +6,7 @@ import (
 	"github.com/ghodss/yaml"
 )
 
+// UnmarshalYAML populate a skeleton from yaml
 func (t *TerraformProjectSkeleton) UnmarshalYAML(data []byte) error {
 	err := yaml.Unmarshal([]byte(data), &t)
 	if err != nil {
@@ -15,6 +16,7 @@ func (t *TerraformProjectSkeleton) UnmarshalYAML(data []byte) error {
 	return nil
 }
 
+// MarshalYAML Write skeleton out to yaml
 func (t *TerraformProjectSkeleton) MarshalYAML() ([]byte, error) {
 	yaml, err := yaml.Marshal(t)
 	return yaml, err

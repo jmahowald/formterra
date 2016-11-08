@@ -123,7 +123,6 @@ modules:
       var_name: foo
     - var_name: bar2
       source_var_name: mod3var
-
   vars:
   - source_var_name: var1_in
     var_name: var1_out
@@ -133,7 +132,6 @@ modules:
 
 func (s *MySuite) TestModuleMarshalling(c *C) {
 	var proj TerraformProjectSkeleton
-
 	moduleCall := ModuleCall{
 		"http://testlocation",
 		"mod1",
@@ -188,13 +186,6 @@ func (s *MySuite) TestModuleMarshalling(c *C) {
 func (s *MySuite) TestProjectGeneration(c *C) {
 
 }
-
-// func (s *MySuite) TestHelloWorld(c *C) {
-//   c.Assert(42, Equals, "42")
-//   c.Assert(io.ErrClosedPipe, ErrorMatches, "io: .*on closed pipe")
-//   c.Check(42, Equals, 42)
-//
-// }
 
 func setConfig(location string) Config {
 	viper.SetConfigFile(location)

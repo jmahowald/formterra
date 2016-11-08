@@ -33,43 +33,37 @@ type TerraformProjectDefinition struct {
 	localLocation string
 }
 
-type FromVariableMapping struct {
-	VarName string
-}
-
+// FromModuleMappings variables can come from other
+// modules
 type FromModuleMappings struct {
 	ModuleName string                 `json:"module_name"`
 	Mappings   []BasicVariableMapping `json:"mappings"`
 }
 
+// FromRemoteMappings variables can come from a terraform
+// remote data source
 type FromRemoteMappings struct {
 	RemoteSourceName string                 `json:"source_name"`
 	Mappings         []BasicVariableMapping `json:"mappings"`
 }
 
+// BasicVariableMapping takes input from the source and
+// maps it into the given Variable Name for the target
 type BasicVariableMapping struct {
 	VarName       string `json:"var_name"`
 	SourceVarName string `json:"source_var_name"`
 }
 
+// ModuleCall represents a terraform use of a module
+// variables to the modules can come from three types of
+// sources, from other modules, from remote sources
+// or from variables within the call ing project
 type ModuleCall struct {
 	URI             string `json:"uri"`
 	Name            string
 	ModuleVariables []FromModuleMappings   `json:"module_vars"`
 	RemoteVariables []FromRemoteMappings   `json:"remote_source_vars"`
 	Variables       []BasicVariableMapping `json:"vars"`
-}
-
-type ModuleTwo struct {
-	URI              string
-	Name             string
-	ModulesVariables []struct {
-		ModuleName string
-		Variables  []struct {
-			OutputName   string
-			VariableName string
-		}
-	}
 }
 
 // TerraformProjectSkeleton a terraform project
@@ -95,7 +89,7 @@ type TerraformLayer struct {
 	// SourceURI    string
 }
 
-//BuiltInTerraformProjectRequest we already have the defintiion of the templates
+//TemplateRequest we already have the defintiion of the templates
 //because they are embedded in the tool
 type TemplateRequest struct {
 	name      string
