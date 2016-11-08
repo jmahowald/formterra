@@ -112,7 +112,6 @@ modules:
     - source_var_name: mod2_out
       var_name: foo
     - var_name: bar
-      source_var_name: ""
   -  module_name: mod3
      mappings:
      - var_name: value3
@@ -143,7 +142,7 @@ func (s *MySuite) TestModuleMarshalling(c *C) {
 				"mod2",
 				[]BasicVariableMapping{
 					BasicVariableMapping{"mod2_out", "foo"},
-					BasicVariableMapping{VarName: "var2"},
+					BasicVariableMapping{VarName: "bar"},
 				},
 			},
 		},
