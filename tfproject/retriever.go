@@ -53,7 +53,7 @@ func (m ExternalModule) Fetch() (TerraformProjectDefinition, error) {
 		log.Warn("Unable to retrieve:", srcURI)
 		return projectDef, err
 	}
-	projectDef.location = destPath
+	projectDef.localLocation = destPath
 	log.Debug("Retrieved:", projectDef)
 	projectDef.loadVars()
 	return projectDef, nil
@@ -111,7 +111,7 @@ func findRequiredAndOptionalVars(vars terraformvars) projectVars {
 
 func (t *TerraformProjectDefinition) loadVars() error {
 
-	files, _ := filepath.Glob(fmt.Sprintf("%s/*.tf", t.location))
+	files, _ := filepath.Glob(fmt.Sprintf("%s/*.tf", t.localLocation))
 
 	for _, tfFile := range files {
 		varConfig := viper.New()
@@ -139,5 +139,5 @@ func (t *TerraformProjectDefinition) loadVars() error {
 }
 
 func init() {
-	os.MkdirAll(externaldir(), 0700)
+	os.MkdirAll(externaldir(), 0755)
 }

@@ -35,7 +35,6 @@ func render(bucketRequest tf.S3BucketRequest) {
 	bucketRequest.Create()
 }
 
-var dryNum = true
 var s3Cmd = cobra.Command{
 	Use:   "s3 <command>",
 	Short: "Manipulates s3 buckets using terraform",

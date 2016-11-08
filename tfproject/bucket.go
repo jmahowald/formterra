@@ -13,7 +13,7 @@ type S3BucketRequest struct {
 
 // Create Creates a terraform layer to create an s3 bucket
 func (s S3BucketRequest) Create() (TerraformLayer, bool) {
-	request := BuiltInTerraformProjectRequest{
+	request := TemplateRequest{
 		name:      "bucket_" + s.BucketName,
 		templates: []string{"s3.tf"},
 		data:      s,

@@ -4,20 +4,12 @@ import (
 	"html/template"
 	"io/ioutil"
 	"os"
-	"os/exec"
 	"path/filepath"
 	//TODO wrap this up in our own to allow us to switch out easier?
 	log "github.com/Sirupsen/logrus"
 )
 
 const dirMode = 0755
-
-// TerraformProject something that we can see the plan for, apply, and destroy
-type TerraformProject interface {
-	Plan() exec.Cmd
-	Apply() exec.Cmd
-	Destroy() exec.Cmd
-}
 
 //TerraformProjectRequest Can create a terraform layer for u
 type TerraformProjectRequest interface {
@@ -27,26 +19,8 @@ type TerraformProjectRequest interface {
 // TfConfig configuration for this project.  By default uses viper
 var TfConfig = viperConfig
 
-// TerraformLayer is usually a terraform "project", but that is built
-// on another layer
-type TerraformLayer struct {
-	IsExternal   bool
-	Name         string
-	RequiredVars []string
-	NextLayer    *TerraformLayer
-	// SourceURI    string
-}
-
-//BuiltInTerraformProjectRequest we already have the defintiion of the templates
-//because they are embedded in the tool
-type BuiltInTerraformProjectRequest struct {
-	name      string
-	templates []string
-	data      interface{}
-}
-
 //Create builds layer by executing all of the templates
-func (req BuiltInTerraformProjectRequest) Create() (TerraformLayer, bool) {
+func (req TemplateRequest) Create() (TerraformLayer, bool) {
 	log.Debug("Attempting to create:", req)
 	fullPath, exists := layerExists(req.name)
 	if !exists {
@@ -97,18 +71,6 @@ var funcMap = template.FuncMap{
 	"IsSet":     isSet,
 	"GetString": getString,
 }
-
-//
-// func command(t *TerraformLayer, command string, args ...string) (exec.Cmd, error) {
-// 	bin, err := exec.LookPath(command)
-// 	if err != nil {
-// 		log.Warn("Could not find in path:", command, err)
-// 		return exec.Cmd{}, err
-// 	}
-// 	dir, _ := t.dir()
-// 	cmd := exec.Cmd{Path: bin, Dir: dir, Args: args}
-// 	return cmd, nil
-// }
 
 func layerExists(path string) (string, bool) {
 	dirPath := filepath.Join(getString(TerraformDir),

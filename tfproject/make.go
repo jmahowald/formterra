@@ -51,16 +51,6 @@ func (t TerraformLayer) GetMake() (exec.Cmd, error) {
 	return makecommand.getMakeCommand(t)
 }
 
-func addArgs(cmd exec.Cmd, args ...string) exec.Cmd {
-	newargs := make([]string, len(cmd.Args)+len(args))
-	newargs = append(newargs, cmd.Args...)
-	newargs = append(newargs, args...)
-	cmd.Args = newargs
-	return cmd
-}
-
-type standardmake struct{}
-
 func (s standardmake) getMakeCommand(layer TerraformLayer) (exec.Cmd, error) {
 	bin, err := exec.LookPath("make")
 	if err != nil {
@@ -70,6 +60,16 @@ func (s standardmake) getMakeCommand(layer TerraformLayer) (exec.Cmd, error) {
 	dir, _ := layer.dir()
 	return exec.Cmd{Path: bin, Dir: dir}, nil
 }
+
+func addArgs(cmd exec.Cmd, args ...string) exec.Cmd {
+	newargs := make([]string, len(cmd.Args)+len(args))
+	newargs = append(newargs, cmd.Args...)
+	newargs = append(newargs, args...)
+	cmd.Args = newargs
+	return cmd
+}
+
+type standardmake struct{}
 
 // const DockerArgsKey = "usedocker"
 

@@ -2,6 +2,7 @@ package tfproject
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -100,17 +101,82 @@ func (s *MySuite) TestRetreival(c *C) {
 	c.Assert(projectDef.RequiredVars, DeepEquals, []string{"location"})
 }
 
-func (s *MySuite) TestModuleClient(c *C) {
-	generateModule("./test-fixtures/dcos", "mesos")
-	expectedFile := filepath.Join(testdir, "test", "mesos", "module_client.tf")
-	fileExists(expectedFile, c)
+var projectStruct = `
+name: TestSource
+modules:
+- name: mod1
+  uri: http://testlocation
+  module_vars:
+  - module_name: mod2
+    mappings:
+    - source_var_name: mod2_out
+      var_name: foo
+    - var_name: bar
+      source_var_name: ""
+  -  module_name: mod3
+     mappings:
+     - var_name: value3
+       source_var_name: mod3var
+  remote_source_vars:
+  - source_name: vpc_layer
+    mappings:
+    - source_var_name: remote1_out
+      var_name: foo
+    - var_name: bar2
+      source_var_name: mod3var
+
+  vars:
+  - source_var_name: var1_in
+    var_name: var1_out
+  - var_name: bar3
+
+`
+
+func (s *MySuite) TestModuleMarshalling(c *C) {
+	var proj TerraformProjectSkeleton
+
+	moduleCall := ModuleCall{
+		"http://testlocation",
+		"mod1",
+		[]FromModuleMappings{
+			FromModuleMappings{
+				"mod2",
+				[]BasicVariableMapping{
+					BasicVariableMapping{"mod2_out", "foo"},
+					BasicVariableMapping{VarName: "var2"},
+				},
+			},
+		},
+		[]FromRemoteMappings{},
+		[]BasicVariableMapping{},
+	}
+
+	expectedProj := TerraformProjectSkeleton{
+		TerraformLayer{"TestSource"},
+		[]ModuleCall{moduleCall},
+	}
+
+	yamlOut, _ := expectedProj.MarshalYAML()
+
+	fmt.Print(string(yamlOut))
+
+	err := proj.UnmarshalYAML([]byte(projectStruct))
+	c.Assert(err, IsNil)
+	c.Assert(proj, NotNil)
+
+	// log.Infof("Output yaml is", string(yamlOut))
+
+	c.Assert(proj, Equals, expectedProj)
+}
+
+func (s *MySuite) TestProjectGeneration(c *C) {
 
 }
 
 // func (s *MySuite) TestHelloWorld(c *C) {
-// 	c.Assert(42, Equals, "42")
-// 	c.Assert(io.ErrClosedPipe, ErrorMatches, "io: .*on closed pipe")
-// 	c.Check(42, Equals, 42)
+//   c.Assert(42, Equals, "42")
+//   c.Assert(io.ErrClosedPipe, ErrorMatches, "io: .*on closed pipe")
+//   c.Check(42, Equals, 42)
 //
 // }
 

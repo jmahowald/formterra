@@ -48,7 +48,7 @@ func generateModule(moduleURI, name string) {
 
 	mappings := simpleMappings(def.RequiredVars)
 	modDef := moduleRequest{def.Name, moduleURI, mappings}
-	req := BuiltInTerraformProjectRequest{name,
+	req := TemplateRequest{name,
 		[]string{"module_client.tf"},
 		modDef}
 
