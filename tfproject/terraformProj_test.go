@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/viper"
 	// I use this instead of base testing Suite
 	// to bring back warm fuzzies of junit
-	. "gopkg.in/check.v1"
+	. "github.com/go-check/check"
 )
 
 // Hook up gocheck into the "go test" runner.

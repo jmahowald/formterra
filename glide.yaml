@@ -7,5 +7,3 @@ import:
 - package: github.com/mitchellh/mapstructure
 - package: github.com/spf13/cobra
 - package: github.com/spf13/viper
-testImport:
-- package: gopkg.in/check.v1
