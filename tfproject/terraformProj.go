@@ -19,18 +19,22 @@ type TerraformProjectRequest interface {
 // TfConfig configuration for this project.  By default uses viper
 var TfConfig = viperConfig
 
-//Create builds layer by executing all of the templates
-func (req TemplateRequest) Create() (TerraformLayer, bool) {
-	log.Debug("Attempting to create:", req)
-	fullPath, exists := layerExists(req.name)
+func (t TerraformLayer) getDir() (string, bool) {
+	log.Debug("Attempting to create:", t.Name)
+	fullPath, exists := layerExists(t.Name)
 	if !exists {
 		err := os.MkdirAll(fullPath, dirMode)
 		if err != nil {
 			log.Fatalf("Unable to create directory at %s:%s", fullPath, err)
 		}
 	}
+	return fullPath, exists
+}
 
+//Create builds layer by executing all of the templates
+func (req TemplateRequest) Create() (TerraformLayer, bool) {
 	layer := TerraformLayer{Name: req.name}
+	fullPath, exists := layer.getDir()
 	if !exists || isSet(Overwrite) {
 		log.Debug("Writing out project to ", fullPath)
 		layer.makeMake()
@@ -53,6 +57,7 @@ func parseTemplate(name, path string) *template.Template {
 	// var templateBytes byte[]
 	var templateBytes []byte
 	templateBytes = loadAsset(path)
+
 	tmpl := template.Must(template.New(name).Funcs(funcMap).Parse(string(templateBytes)))
 	return tmpl
 }

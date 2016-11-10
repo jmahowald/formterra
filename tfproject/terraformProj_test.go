@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/viper"
 	// I use this instead of base testing Suite
 	// to bring back warm fuzzies of junit
-	. "github.com/go-check/check"
+	. "gopkg.in/check.v1"
 )
 
 // Hook up gocheck into the "go test" runner.
@@ -177,14 +177,19 @@ func (s *MySuite) TestModuleMarshalling(c *C) {
 	err := proj.UnmarshalYAML([]byte(projectStruct))
 	c.Assert(err, IsNil)
 	c.Assert(proj, NotNil)
-
-	// log.Infof("Output yaml is", string(yamlOut))
-
 	c.Assert(proj, DeepEquals, expectedProj)
+
+	vars := proj.GetAllVars()
+	for _, variable := range vars {
+		c.Assert(variable.VarName, Not(Equals), "")
+	}
 }
 
 func (s *MySuite) TestProjectGeneration(c *C) {
-
+	var proj TerraformProjectSkeleton
+	err := proj.UnmarshalYAML([]byte(projectStruct))
+	err = proj.generateSkeleton()
+	c.Assert(err, NotNil)
 }
 
 func setConfig(location string) Config {

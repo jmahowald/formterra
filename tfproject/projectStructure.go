@@ -18,9 +18,8 @@ type VarMappings []VarMapping
 
 // VarMapping maps a required variable to a source for terraform
 type VarMapping struct {
-	VarName        string
-	VarMappingType MappingType
-	VarValuePath   []string
+	VarName      string
+	VarValuePath []string
 }
 
 //TerraformProjectDefinition Base object for working
@@ -33,22 +32,25 @@ type TerraformProjectDefinition struct {
 	localLocation string
 }
 
-// FromModuleMappings variables can come from other
-// modules
+//FromModuleMappings variables can come from other
+//modules
 type FromModuleMappings struct {
 	ModuleName string                 `json:"module_name"`
 	Mappings   []BasicVariableMapping `json:"mappings"`
 }
 
-// FromRemoteMappings variables can come from a terraform
+//FromRemoteMappings variables can come from a terraform
 // remote data source
 type FromRemoteMappings struct {
 	RemoteSourceName string                 `json:"source_name"`
 	Mappings         []BasicVariableMapping `json:"mappings"`
 }
 
-// BasicVariableMapping takes input from the source and
-// maps it into the given Variable Name for the target
+//BasicVariableMappings a list of variables to map in.
+type BasicVariableMappings []BasicVariableMapping
+
+//BasicVariableMapping takes input from the source and
+//maps it into the given Variable Name for the target
 type BasicVariableMapping struct {
 	VarName       string `json:"var_name"`
 	SourceVarName string `json:"source_var_name"`
@@ -61,9 +63,9 @@ type BasicVariableMapping struct {
 type ModuleCall struct {
 	URI             string `json:"uri"`
 	Name            string
-	ModuleVariables []FromModuleMappings   `json:"module_vars"`
-	RemoteVariables []FromRemoteMappings   `json:"remote_source_vars"`
-	Variables       []BasicVariableMapping `json:"vars"`
+	ModuleVariables []FromModuleMappings  `json:"module_vars"`
+	RemoteVariables []FromRemoteMappings  `json:"remote_source_vars"`
+	Variables       BasicVariableMappings `json:"vars"`
 }
 
 // TerraformProjectSkeleton a terraform project

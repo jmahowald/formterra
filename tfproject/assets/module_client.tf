@@ -1,8 +1,9 @@
-
+{{ define "module"}}
 
 module "{{.Name}}" {
-  source = "{{.SourceURI}}"
-  {{ range $key, $mapping := .Mappings }}
+  source = "{{.URI}}"
+  {{ range $key, $mapping := .GetVariables }}
   {{$mapping.VarName}} = "{{printf "${%s}" $mapping.VarPath}}"{{ end }}
-
 }
+
+{{end}}

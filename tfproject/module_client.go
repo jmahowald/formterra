@@ -26,74 +26,110 @@ type moduleRequest struct {
 	Mappings  VarMappings
 }
 
-// VarMapFactory simple interface to allow us to
-// easily create a call off to a module
-type VarMapFactory interface {
-	CreateMapping() VarMapping
-}
-
 // VarPath Get the formatted path to the value for terraform
 // interpolation
 func (v VarMapping) VarPath() string {
 	return strings.Join(v.VarValuePath, ".")
 }
 
-func generateModule(moduleURI, name string) {
-
-	mod := ExternalModule{name, moduleURI}
-	def, err := mod.Fetch()
-	if err != nil {
-		log.Fatalf("could not fetch module from %s", moduleURI)
+func (v BasicVariableMapping) interpolationPath(prefix []string) VarMapping {
+	var sourceName string
+	if v.SourceVarName != "" {
+		sourceName = v.SourceVarName
+	} else {
+		sourceName = v.VarName
 	}
-
-	mappings := simpleMappings(def.RequiredVars)
-	modDef := moduleRequest{def.Name, moduleURI, mappings}
-	req := TemplateRequest{name,
-		[]string{"module_client.tf"},
-		modDef}
-
-	req.Create()
+	return VarMapping{v.VarName, append(prefix, sourceName)}
 }
 
-func simpleMappings(requiredVars []string) VarMappings {
-	mappings := make([]VarMapping, len(requiredVars), len(requiredVars))
-	for i := range requiredVars {
-		mappings[i] = newVariableMapping(requiredVars[i], requiredVars[i])
+func (m ModuleCall) GetVariables() VarMappings {
+	// Default of 20 mappings. No good reason for this
+	// heuristic. because we use append we don't really
+	// worry about this being to small
+	mappings := make([]VarMapping, 0, 20)
+	for _, modVars := range m.ModuleVariables {
+		mappings = append(mappings, modVars.GetTerraformMappings()...)
+	}
+	for _, remoteVars := range m.RemoteVariables {
+		mappings = append(mappings, remoteVars.GetTerraformMappings()...)
+	}
+	mappings = append(mappings, m.Variables.GetTerraformMappings()...)
+	return mappings
+}
+
+func (t TerraformProjectSkeleton) GetAllVars() VarMappings {
+	// Default of 20 mappings. No good reason for this
+	// heuristic. because we use append we don't really
+	// worry about this being to small
+	mappings := make([]VarMapping, 0, 20)
+	for _, module := range t.Modules {
+		mappings = append(mappings, module.Variables.GetTerraformMappings()...)
 	}
 	return mappings
 }
 
-// NewModuleMapping a mapping of a variable to
-// to another modules source
-func newModuleMapping(varName, moduleName, mappedValue string) VarMapping {
-	varPath := []string{"module", moduleName, mappedValue}
-	x := VarMapping{
-		VarName:        varName,
-		VarMappingType: MODULE,
-		VarValuePath:   varPath,
+func (t TerraformProjectSkeleton) generateSkeleton() error {
+
+	tpl := parseTemplate("project", "project.tf")
+	moduleTemplateBytes := loadAsset("module_client.tf")
+	tpl, err := tpl.Parse(string(moduleTemplateBytes))
+	t.getDir()
+	f := t.openForWrite("main.tf")
+	if err = tpl.Execute(f, t); err != nil {
+		log.Fatalln("Unable to execute template", t, err)
+		return err
 	}
-	return x
+	return nil
 }
 
-// NewVariableMapping A mapping that should come from a tfvars file or
-// environment variable
-func newVariableMapping(varName, mappedValue string) VarMapping {
-	varPath := []string{"var", mappedValue}
-	x := VarMapping{
-		VarName:        varName,
-		VarMappingType: TFVARS,
-		VarValuePath:   varPath,
-	}
-	return x
+//
+// func generateModule(moduleURI, name string) {
+//
+// 	mod := ExternalModule{name, moduleURI}
+// 	def, err := mod.Fetch()
+// 	if err != nil {
+// 		log.Fatalf("could not fetch module from %s", moduleURI)
+// 	}
+//
+// 	mappings := simpleMappings(def.RequiredVars)
+// 	modDef := moduleRequest{def.Name, moduleURI, mappings}
+// 	req := TemplateRequest{name,
+// 		[]string{"module_client.tf"},
+// 		modDef}
+//
+// 	req.Create()
+// }
+
+//variableSourceMapper able to get terraform interpolations
+type variableSourceMapper interface {
+	GetTerraformMappings() VarMappings
 }
 
-// NewRemoteStateMapping creates a mapping for variables
-func newRemoteStateMapping(varName, stateName, mappedValue string) VarMapping {
-	varPath := []string{"data", "terraform_remote_state", stateName, mappedValue}
-	x := VarMapping{
-		VarName:        varName,
-		VarMappingType: REMOTE,
-		VarValuePath:   varPath,
+func (v BasicVariableMappings) GetTerraformMappings() VarMappings {
+	mappings := make([]VarMapping, len(v), len(v))
+	prefix := []string{"var"}
+	for i := range v {
+		mappings[i] = v[i].interpolationPath(prefix)
 	}
-	return x
+	return mappings
+}
+
+func (mod FromModuleMappings) GetTerraformMappings() VarMappings {
+	vars := mod.Mappings
+	prefix := []string{"module", mod.ModuleName}
+	mappings := make([]VarMapping, len(vars), len(vars))
+	for i := range vars {
+		mappings[i] = vars[i].interpolationPath(prefix)
+	}
+	return mappings
+}
+
+func (remote FromRemoteMappings) GetTerraformMappings() VarMappings {
+	prefix := []string{"data", "terraform_remote_state", remote.RemoteSourceName}
+	vars := remote.Mappings
+	mappings := make([]VarMapping, len(vars), len(vars))
+	for i := range vars {
+		mappings[i] = vars[i].interpolationPath(prefix)
+	}
+	return mappings
 }
