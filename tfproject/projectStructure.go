@@ -1,6 +1,9 @@
 package tfproject
 
-import "os/exec"
+import (
+	"log"
+	"os/exec"
+)
 
 // MappingType variables can come from tfvars, from another module or
 // from a remote location
@@ -97,4 +100,18 @@ type TemplateRequest struct {
 	name      string
 	templates []string
 	data      interface{}
+}
+
+func (t TerraformProjectSkeleton) GenerateSkeleton() error {
+
+	tpl := parseTemplate("project", "project.tf")
+	moduleTemplateBytes := loadAsset("module_client.tf")
+	tpl, err := tpl.Parse(string(moduleTemplateBytes))
+	t.getDir()
+	f := t.openForWrite("main.tf")
+	if err = tpl.Execute(f, t); err != nil {
+		log.Fatalln("Unable to execute template", t, err)
+		return err
+	}
+	return nil
 }

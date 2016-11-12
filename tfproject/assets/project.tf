@@ -9,3 +9,6 @@ variable "{{$var.VarName}}" { }
 {{ range $key, $module := .Modules }}
 {{template "module" $module}}
 {{ end }}
+
+
+// Produced by {{version}}

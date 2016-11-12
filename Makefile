@@ -34,6 +34,6 @@ $(ASSETS): $(ASSET_SOURCES)
 
 
 test: $(BINARY)
-	cd tfproject ; go test .
+	cd tfproject ; go test $(LDFLAGS) .
 
 # TODO make this look into asssest directory

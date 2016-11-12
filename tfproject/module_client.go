@@ -1,10 +1,6 @@
 package tfproject
 
-import (
-	"strings"
-
-	log "github.com/Sirupsen/logrus"
-)
+import "strings"
 
 //TerraformProjectDefinition Base object for working with terraform projects
 // type TerraformProjectDefinition struct {
@@ -66,20 +62,6 @@ func (t TerraformProjectSkeleton) GetAllVars() VarMappings {
 		mappings = append(mappings, module.Variables.GetTerraformMappings()...)
 	}
 	return mappings
-}
-
-func (t TerraformProjectSkeleton) generateSkeleton() error {
-
-	tpl := parseTemplate("project", "project.tf")
-	moduleTemplateBytes := loadAsset("module_client.tf")
-	tpl, err := tpl.Parse(string(moduleTemplateBytes))
-	t.getDir()
-	f := t.openForWrite("main.tf")
-	if err = tpl.Execute(f, t); err != nil {
-		log.Fatalln("Unable to execute template", t, err)
-		return err
-	}
-	return nil
 }
 
 //

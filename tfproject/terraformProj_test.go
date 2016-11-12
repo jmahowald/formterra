@@ -12,6 +12,7 @@ import (
 	"github.com/spf13/viper"
 	// I use this instead of base testing Suite
 	// to bring back warm fuzzies of junit
+	"github.com/jmahowald/formterra/core"
 	. "gopkg.in/check.v1"
 )
 
@@ -188,8 +189,12 @@ func (s *MySuite) TestModuleMarshalling(c *C) {
 func (s *MySuite) TestProjectGeneration(c *C) {
 	var proj TerraformProjectSkeleton
 	err := proj.UnmarshalYAML([]byte(projectStruct))
-	err = proj.generateSkeleton()
+	err = proj.GenerateSkeleton()
 	c.Assert(err, NotNil)
+}
+
+func (s *MySuite) TestVersion(c *C) {
+	c.Assert(core.Version, Equals, "0.0.1")
 }
 
 func setConfig(location string) Config {

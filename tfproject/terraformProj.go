@@ -5,6 +5,10 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+
+	"fmt"
+
+	"github.com/jmahowald/formterra/core"
 	//TODO wrap this up in our own to allow us to switch out easier?
 	log "github.com/Sirupsen/logrus"
 )
@@ -75,6 +79,11 @@ func getString(key string) string {
 var funcMap = template.FuncMap{
 	"IsSet":     isSet,
 	"GetString": getString,
+	"version":   formTerraVersion,
+}
+
+func formTerraVersion() string {
+	return fmt.Sprintf("Version: %s  BuildTime:%s", core.Version, core.BuildTime)
 }
 
 func layerExists(path string) (string, bool) {
