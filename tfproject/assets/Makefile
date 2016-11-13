@@ -1,3 +1,4 @@
+# Generated Makefile, created by {{version}}
 
 # If there is a terraform.tfvars
 # use that as terraform input
@@ -9,6 +10,8 @@ endif
 
 TF_FILES=$(wildcard *.tf)
 
+.PHONY: plan refresh apply clean 
+
 .terraform: $(TF_FILES)
 	terraform get --update
 	for i in $$(ls .terraform/modules/*/Makefile); do i=$$(dirname $$i); echo "Trying make in $$i"; make -C $$i; done
@@ -18,6 +21,7 @@ plan: $(TF_FILES) .terraform
 
 refresh:
 	terraform refresh $(TF_VAR_ARGS)
+
 terraform.tfplan: $(TF_FILES) .terraform
 	$(MAKE) plan
 
@@ -30,5 +34,4 @@ clean:
 	rm -rf terraform.tfstate
 	rm -rf terraform.tfplan
 
-destroy:
-	terraform destroy $(TF_VAR_ARGS)
+

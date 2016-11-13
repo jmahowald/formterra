@@ -15,8 +15,11 @@
 package cmd
 
 import (
-	log "github.com/Sirupsen/logrus"
+	"os"
 
+	"io/ioutil"
+
+	log "github.com/Sirupsen/logrus"
 	tf "github.com/jmahowald/formterra/tfproject"
 	"github.com/spf13/cobra"
 )
@@ -28,6 +31,8 @@ type TfClientRequest struct {
 	CreateTfVars      bool
 }
 
+var projectConfig string
+var projectName string
 var clientRequest TfClientRequest
 
 func genClient(clientRequest TfClientRequest) {
@@ -38,7 +43,6 @@ func genClient(clientRequest TfClientRequest) {
 		log.Fatalf("error fetching %s %v", clientRequest.Uri, err)
 	}
 	log.Debugf("Project definition vars %s", projectDef.RequiredVars)
-
 }
 
 // clientCmd represents the client command
@@ -47,18 +51,42 @@ var clientCmd = &cobra.Command{
 
 	Short: "Generates terraform to call modules",
 	Long: `Generates terraform necessary to interact with
-	an existing terraform module
+	existing terraform modules
 	`,
 
 	PreRun: func(cmd *cobra.Command, args []string) {
-		if clientRequest.Uri == "" {
-			fail("You must provide the uri of the terraform project", cmd)
+		if projectConfig == "" {
+			fail("You must provide a configuration file for the terraform skeleto to generate", cmd)
 			return
 		}
+		// if clientRequest.Uri == "" {
+		// 	fail("You must provide the uri of the terraform project", cmd)
+		// 	return
+		// }
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
-		genClient(clientRequest)
+
+		configFileInfo, err := os.Stat(projectConfig)
+		if err != nil {
+			log.Warnf("Could not find file at %s", projectConfig)
+			return
+		}
+		if projectName == "" {
+			projectName = configFileInfo.Name()
+		}
+		bytes, err := ioutil.ReadFile(projectConfig)
+		if err != nil {
+			log.Fatal("Could not read contents of %s", projectConfig)
+		}
+		var skeleton = tf.TerraformProjectSkeleton{}
+		err = skeleton.UnmarshalYAML(bytes)
+		if err != nil {
+			log.Fatal("error parsing %s:%s", projectConfig, err)
+		}
+
+		skeleton.Name = projectName
+		skeleton.GenerateSkeleton()
 	},
 }
 
@@ -77,8 +105,7 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	clientCmd.Flags().StringVarP(&clientRequest.Uri, "uri", "u", "", "what's the url of the terraform project")
-	clientCmd.Flags().StringVar(&clientRequest.ExistingTfVarPath, "tfvars", "", "do you have an existing tfvars")
-	clientCmd.Flags().BoolVarP(&clientRequest.CreateTfVars, "createvars", "v", false, "do you want to have a tfvars generated")
+	clientCmd.Flags().StringVar(&projectConfig, "config", "", "Points to a terraform skeleton config")
+	clientCmd.Flags().StringVar(&projectName, "name", "n", "project name (defaults to last name of uri)")
 
 }
