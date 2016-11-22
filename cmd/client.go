@@ -31,6 +31,7 @@ type TfClientRequest struct {
 	CreateTfVars      bool
 }
 
+var externalModuleDef = false
 var projectConfig string
 var projectName string
 var clientRequest TfClientRequest
@@ -92,20 +93,6 @@ var clientCmd = &cobra.Command{
 
 func init() {
 	moduleCmd.AddCommand(clientCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// clientCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// clientCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
 	clientCmd.Flags().StringVar(&projectConfig, "config", "", "Points to a terraform skeleton config")
 	clientCmd.Flags().StringVar(&projectName, "name", "n", "project name (defaults to last name of uri)")
-
 }
