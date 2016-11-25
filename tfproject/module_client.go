@@ -2,15 +2,15 @@ package tfproject
 
 import "strings"
 
-//TerraformProjectDefinition Base object for working with terraform projects
-// type TerraformProjectDefinition struct {
+//TerraformModuleDefinition Base object for working with terraform projects
+// type TerraformModuleDefinition struct {
 // 	Name         string
 // 	RequiredVars []string
 // 	OptionalVars []string
 // 	location     string
 // }
 //
-// func (t *TerraformProjectDefinition) CreateClient() error {
+// func (t *TerraformModuleDefinition) CreateClient() error {
 // 	return nil
 // }
 
@@ -44,12 +44,12 @@ func (m ModuleCall) GetVariables() VarMappings {
 	// worry about this being to small
 	mappings := make([]VarMapping, 0, 20)
 	for _, modVars := range m.ModuleVariables {
-		mappings = append(mappings, modVars.GetTerraformMappings()...)
+		mappings = append(mappings, modVars.getTerraformMappings()...)
 	}
 	for _, remoteVars := range m.RemoteVariables {
-		mappings = append(mappings, remoteVars.GetTerraformMappings()...)
+		mappings = append(mappings, remoteVars.getTerraformMappings()...)
 	}
-	mappings = append(mappings, m.Variables.GetTerraformMappings()...)
+	mappings = append(mappings, m.Variables.getTerraformMappings()...)
 	return mappings
 }
 
@@ -59,35 +59,17 @@ func (t TerraformProjectSkeleton) GetAllVars() VarMappings {
 	// worry about this being to small
 	mappings := make([]VarMapping, 0, 20)
 	for _, module := range t.Modules {
-		mappings = append(mappings, module.Variables.GetTerraformMappings()...)
+		mappings = append(mappings, module.Variables.getTerraformMappings()...)
 	}
 	return mappings
 }
 
-//
-// func generateModule(moduleURI, name string) {
-//
-// 	mod := ExternalModule{name, moduleURI}
-// 	def, err := mod.Fetch()
-// 	if err != nil {
-// 		log.Fatalf("could not fetch module from %s", moduleURI)
-// 	}
-//
-// 	mappings := simpleMappings(def.RequiredVars)
-// 	modDef := moduleRequest{def.Name, moduleURI, mappings}
-// 	req := TemplateRequest{name,
-// 		[]string{"module_client.tf"},
-// 		modDef}
-//
-// 	req.Create()
-// }
-
 //variableSourceMapper able to get terraform interpolations
 type variableSourceMapper interface {
-	GetTerraformMappings() VarMappings
+	getTerraformMappings() VarMappings
 }
 
-func (v BasicVariableMappings) GetTerraformMappings() VarMappings {
+func (v BasicVariableMappings) getTerraformMappings() VarMappings {
 	mappings := make([]VarMapping, len(v), len(v))
 	prefix := []string{"var"}
 	for i := range v {
@@ -96,7 +78,7 @@ func (v BasicVariableMappings) GetTerraformMappings() VarMappings {
 	return mappings
 }
 
-func (mod FromModuleMappings) GetTerraformMappings() VarMappings {
+func (mod FromModuleMappings) getTerraformMappings() VarMappings {
 	vars := mod.Mappings
 	prefix := []string{"module", mod.ModuleName}
 	mappings := make([]VarMapping, len(vars), len(vars))
@@ -106,7 +88,7 @@ func (mod FromModuleMappings) GetTerraformMappings() VarMappings {
 	return mappings
 }
 
-func (remote FromRemoteMappings) GetTerraformMappings() VarMappings {
+func (remote FromRemoteMappings) getTerraformMappings() VarMappings {
 	prefix := []string{"data", "terraform_remote_state", remote.RemoteSourceName}
 	vars := remote.Mappings
 	mappings := make([]VarMapping, len(vars), len(vars))
@@ -114,4 +96,19 @@ func (remote FromRemoteMappings) GetTerraformMappings() VarMappings {
 		mappings[i] = vars[i].interpolationPath(prefix)
 	}
 	return mappings
+}
+
+// CreateSkeleton Transforms a set of modules into a skeleton
+func CreateSkeleton(mods []TerraformModuleDefinition, name string) TerraformProjectSkeleton {
+	skel := TerraformProjectSkeleton{}
+	skel.TerraformLayer = TerraformLayer{name}
+	for _, mod := range mods {
+		modVars := make([]BasicVariableMapping, len(mod.RequiredVars))
+		for i, variable := range mod.RequiredVars {
+			modVars[i] = BasicVariableMapping{VarName: variable}
+		}
+		modCall := ModuleCall{TerraformModuleDefinition: mod, Variables: modVars}
+		skel.Modules = append(skel.Modules, modCall)
+	}
+	return skel
 }

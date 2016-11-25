@@ -13,13 +13,12 @@ import (
 	getter "github.com/hashicorp/go-getter"
 )
 
+// This may well be overkill
 //ExternalModule  a terraform module that isn't baked into this project
 type ExternalModule struct {
 	Name string
 	URI  string
 }
-
-//type VarMap []map[string]map[string]interface{}
 
 var externaldirname = "external"
 
@@ -28,8 +27,8 @@ func externaldir() string {
 }
 
 // grabs the remote definition (which might be local)
-func (m ExternalModule) Fetch() (TerraformProjectDefinition, error) {
-	projectDef := TerraformProjectDefinition{}
+func (m ExternalModule) Fetch() (TerraformModuleDefinition, error) {
+	projectDef := TerraformModuleDefinition{URI: m.URI}
 	log.Debug("Attempting to retrieve:", m)
 
 	wd, err := os.Getwd()
@@ -109,7 +108,7 @@ func findRequiredAndOptionalVars(vars terraformvars) projectVars {
 // 		defs string,
 // }
 
-func (t *TerraformProjectDefinition) loadVars() error {
+func (t *TerraformModuleDefinition) loadVars() error {
 
 	files, _ := filepath.Glob(fmt.Sprintf("%s/*.tf", t.localLocation))
 
@@ -131,11 +130,27 @@ func (t *TerraformProjectDefinition) loadVars() error {
 		log.Debug("optional vars are:", varLists.optional)
 
 		t.RequiredVars = append(t.RequiredVars, varLists.required...)
-		t.OptionalVars = append(t.RequiredVars, varLists.optional...)
+		t.OptionalVars = append(t.OptionalVars, varLists.optional...)
+
+		var outputs terraformvars
+
+		outMap := varConfig.Get("output")
+		mapstructure.Decode(outMap, &outputs)
+		t.Outputs = append(t.Outputs, findOutputs(outputs)...)
 
 	}
 
 	return nil
+}
+
+func findOutputs(vars terraformvars) []string {
+	outputs := make([]string, 0, len(vars))
+	for _, varentry := range vars {
+		for varname, _ := range varentry {
+			outputs = append(outputs, varname)
+		}
+	}
+	return outputs
 }
 
 func init() {

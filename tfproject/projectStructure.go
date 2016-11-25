@@ -1,9 +1,6 @@
 package tfproject
 
-import (
-	"log"
-	"os/exec"
-)
+import "os/exec"
 
 // MappingType variables can come from tfvars, from another module or
 // from a remote location
@@ -25,14 +22,26 @@ type VarMapping struct {
 	VarValuePath []string
 }
 
-//TerraformProjectDefinition Base object for working
+//TerraformModuleDefinition Base object for working
 //with terraform projects
-type TerraformProjectDefinition struct {
+type TerraformModuleDefinition struct {
 	Name          string
-	RequiredVars  []string
-	OptionalVars  []string
+	RequiredVars  []string `json:"required_vars"`
+	OptionalVars  []string `json:"optional_vars"`
+	Outputs       []string
 	URI           string
 	localLocation string
+}
+
+// ModuleCall represents a terraform use of a module
+// variables to the modules can come from three types of
+// sources, from other modules, from remote sources
+// or from variables within the call ing project
+type ModuleCall struct {
+	TerraformModuleDefinition
+	ModuleVariables []FromModuleMappings  `json:"module_vars"`
+	RemoteVariables []FromRemoteMappings  `json:"remote_source_vars"`
+	Variables       BasicVariableMappings `json:"vars"`
 }
 
 //FromModuleMappings variables can come from other
@@ -56,19 +65,7 @@ type BasicVariableMappings []BasicVariableMapping
 //maps it into the given Variable Name for the target
 type BasicVariableMapping struct {
 	VarName       string `json:"var_name"`
-	SourceVarName string `json:"source_var_name"`
-}
-
-// ModuleCall represents a terraform use of a module
-// variables to the modules can come from three types of
-// sources, from other modules, from remote sources
-// or from variables within the call ing project
-type ModuleCall struct {
-	URI             string `json:"uri"`
-	Name            string
-	ModuleVariables []FromModuleMappings  `json:"module_vars"`
-	RemoteVariables []FromRemoteMappings  `json:"remote_source_vars"`
-	Variables       BasicVariableMappings `json:"vars"`
+	SourceVarName string `json:"source_var_name,omitempty"`
 }
 
 // TerraformProjectSkeleton a terraform project
@@ -91,27 +88,6 @@ type TerraformProject interface {
 // The layers are stored in a consistent directory
 type TerraformLayer struct {
 	Name string
+	// Type string
 	// SourceURI    string
-}
-
-//TemplateRequest we already have the defintiion of the templates
-//because they are embedded in the tool
-type TemplateRequest struct {
-	name      string
-	templates []string
-	data      interface{}
-}
-
-func (t TerraformProjectSkeleton) GenerateSkeleton() error {
-
-	tpl := parseTemplate("project", "project.tf")
-	moduleTemplateBytes := loadAsset("module_client.tf")
-	tpl, err := tpl.Parse(string(moduleTemplateBytes))
-	t.getDir()
-	f := t.openForWrite("main.tf")
-	if err = tpl.Execute(f, t); err != nil {
-		log.Fatalln("Unable to execute template", t, err)
-		return err
-	}
-	return nil
 }

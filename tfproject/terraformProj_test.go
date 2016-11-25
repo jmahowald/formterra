@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"os"
-	"path/filepath"
 	"testing"
 
 	log "github.com/Sirupsen/logrus"
@@ -12,7 +11,7 @@ import (
 	"github.com/spf13/viper"
 	// I use this instead of base testing Suite
 	// to bring back warm fuzzies of junit
-	"github.com/jmahowald/formterra/core"
+
 	. "gopkg.in/check.v1"
 )
 
@@ -38,7 +37,7 @@ func fileExists(path string, c *C) {
 }
 
 func (s *MySuite) SetUpSuite(c *C) {
-	testdir = "./target"
+	testdir = "./testresults"
 	log.SetLevel(log.DebugLevel)
 	//Cleanup if around from old test
 	os.RemoveAll(testdir)
@@ -49,6 +48,7 @@ func (s *MySuite) SetUpSuite(c *C) {
 }
 
 func (s *MySuite) TearDownTest(c *C) {
+
 	//If any tests fail, we wanted to mark that so we don't clean up and can examine
 	failure = true
 }
@@ -65,41 +65,6 @@ func check(c *C, err error, msg ...string) {
 	if err != nil {
 		c.Error(msg, err)
 	}
-}
-
-// func check(trutc *C)
-func (s *MySuite) TestBucket(c *C) {
-	c.Skip("Temporarily off to speed up testing")
-	req := S3BucketRequest{
-		S3BucketID{"testingbucket", "my.test"},
-		true,
-	}
-	layer, exists := req.Create()
-	if exists {
-		c.Error("Bucket requeset already existed")
-	}
-	expectedFile := filepath.Join(testdir, "test", "bucket_testingbucket", "s3.tf")
-	fileExists(expectedFile, c)
-	fileExists(filepath.Join(testdir, "test", "bucket_testingbucket", "Makefile"), c)
-	plan, err := layer.PlanCommand()
-	check(c, err, "Couldn't get make command")
-	plan.Stdout = os.Stdout
-	plan.Stderr = os.Stderr
-	err = plan.Run()
-	check(c, err, "Problems running plan")
-}
-
-func (s *MySuite) TestRetreival(c *C) {
-
-	// jsonexample := "examples"
-
-	module := ExternalModule{URI: "./test-fixtures/simpleterraform"}
-	projectDef, err := module.Fetch()
-	check(c, err, "couldn't get local module")
-	log.Debug("Project def:", projectDef)
-	c.Assert(projectDef.Name, Equals, "simpleterraform")
-	c.Assert(projectDef.RequiredVars, HasLen, 1)
-	c.Assert(projectDef.RequiredVars, DeepEquals, []string{"location"})
 }
 
 var projectStruct = `
@@ -133,10 +98,13 @@ modules:
 
 func (s *MySuite) TestModuleMarshalling(c *C) {
 	var proj TerraformProjectSkeleton
+
 	moduleCall := ModuleCall{
-		"http://testlocation",
-		"mod1",
-		[]FromModuleMappings{
+		TerraformModuleDefinition: TerraformModuleDefinition{
+			Name: "mod1",
+			URI:  "http://testlocation",
+		},
+		ModuleVariables: []FromModuleMappings{
 			FromModuleMappings{
 				"mod2",
 				[]BasicVariableMapping{
@@ -151,7 +119,7 @@ func (s *MySuite) TestModuleMarshalling(c *C) {
 				},
 			},
 		},
-		[]FromRemoteMappings{
+		RemoteVariables: []FromRemoteMappings{
 			FromRemoteMappings{
 				"vpc_layer",
 				[]BasicVariableMapping{
@@ -160,7 +128,7 @@ func (s *MySuite) TestModuleMarshalling(c *C) {
 				},
 			},
 		},
-		[]BasicVariableMapping{
+		Variables: []BasicVariableMapping{
 			BasicVariableMapping{"var1_out", "var1_in"},
 			BasicVariableMapping{VarName: "bar3"},
 		},
@@ -190,11 +158,8 @@ func (s *MySuite) TestProjectGeneration(c *C) {
 	var proj TerraformProjectSkeleton
 	err := proj.UnmarshalYAML([]byte(projectStruct))
 	err = proj.GenerateSkeleton()
-	c.Assert(err, NotNil)
-}
-
-func (s *MySuite) TestVersion(c *C) {
-	c.Assert(core.Version, Equals, "0.0.1")
+	log.Info("result is ", err)
+	c.Assert(err, IsNil)
 }
 
 func setConfig(location string) Config {

@@ -1,5 +1,3 @@
-# Generated Makefile, created by {{version}}
-
 # If there is a terraform.tfvars
 # use that as terraform input
 # rather than depend on environment variables or user input

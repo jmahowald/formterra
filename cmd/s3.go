@@ -27,6 +27,7 @@ type S3BucketRequest struct {
 	Fqdn        string
 	BucketName  string
 	UnVersioned bool
+	CreateUser  bool
 }
 
 var bucketRequest tf.S3BucketRequest
@@ -71,5 +72,5 @@ func init() {
 	s3Cmd.Flags().StringVarP(&bucketRequest.BucketName, "bucket", "b", "", "what's the base name for your bucket")
 	s3Cmd.Flags().StringVarP(&bucketRequest.Fqdn, "fqdn", "f", "", "is prepended onto your bucket name")
 	s3Cmd.Flags().BoolVarP(&bucketRequest.UnVersioned, "unversioned", "u", false, "do you want the bucket unversioned")
-
+	s3Cmd.Flags().BoolVar(&bucketRequest.CreateUser, "createuser", false, "do you want to create a user")
 }

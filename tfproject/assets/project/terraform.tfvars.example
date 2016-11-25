@@ -1,0 +1,2 @@
+{{ range $key, $var := .GetAllVars}}
+{{$var.VarName}}=""{{ end }}

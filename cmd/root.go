@@ -37,12 +37,6 @@ var debugLogging bool
 var RootCmd = &cobra.Command{
 	Use:   "formterra",
 	Short: "A collection of commands to use common terraform patterns",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
 
 	// Set logging for all commands
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
@@ -92,9 +86,7 @@ func init() {
 		false, "if there is something already there, do we overwrite when we generate")
 
 	RootCmd.PersistentFlags().StringP(tf.Env, "e", "", "what environment name the resource should be tagged with ")
-	RootCmd.PersistentFlags().StringP(tf.Owner, "o", "", "what owner should the resources be tagged with")
 	cobra.OnInitialize(initConfig)
-
 	RootCmd.AddCommand(versionCommand)
 
 }

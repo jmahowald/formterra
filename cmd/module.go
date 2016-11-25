@@ -14,7 +14,16 @@
 
 package cmd
 
-import "github.com/spf13/cobra"
+import (
+	"fmt"
+	"io"
+	"log"
+	"os"
+
+	"io/ioutil"
+
+	"github.com/spf13/cobra"
+)
 
 // moduleCmd represents the module command
 var moduleCmd = &cobra.Command{
@@ -27,17 +36,48 @@ var moduleCmd = &cobra.Command{
 	// },
 }
 
+var output string
+var input string
+
+func read() []byte {
+	var reader io.Reader
+	if input == "" || input == "-" {
+		reader = os.Stdin
+	} else {
+		reader, err := os.Open(input)
+		if err != nil {
+			log.Fatalf("Could not open %s for reading", input)
+		}
+		defer reader.Close()
+	}
+	data, err := ioutil.ReadAll(reader)
+	if err != nil {
+		log.Fatalf("Could not read from %s", reader)
+	}
+	return data
+}
+
+func write(data []byte) {
+	var writer io.Writer
+	if output == "" || output == "-" {
+		writer = os.Stdout
+	} else {
+		writer, err := os.Create(output)
+		if err != nil {
+			log.Fatalf("Could not open %s for writing", output)
+		}
+		defer writer.Close()
+	}
+	_, err := fmt.Fprint(writer, string(data))
+	if err != nil {
+		log.Fatalf("Problem writing to %s", writer)
+	}
+}
+
 func init() {
+	moduleCmd.PersistentFlags().StringVarP(&output, "output", "o", "-", "Output use - to output to stdout (default)")
+	moduleCmd.PersistentFlags().StringVarP(&input, "input", "i", "-", "Input use - to use stdin(default)")
+
 	RootCmd.AddCommand(moduleCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// moduleCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// moduleCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 }

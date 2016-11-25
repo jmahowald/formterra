@@ -4,7 +4,9 @@ SOURCES := $(shell find $(SOURCEDIR) -type f -name '*.go')
 BINARY=formterra
 
 ASSETS=tfproject/assets.go
-ASSET_SOURCES := $(wildcard tfproject/assets/*)
+ASSET_SOURCES := $(shell find tfproject/assets/* -type f -print)
+
+DOC_SOURCES := $(shell find cmd -type f -name '*.go')
 
 # H/T https://ariejan.net/2015/10/03/a-makefile-for-golang-cli-tools/
 # VERSION=1.0.0
@@ -22,16 +24,19 @@ $(BINARY): $(ASSETS) $(SOURCES)
 
 .PHONY: install
 install:
-	go install ${LDFLAGS} ./...
+	go install ${LDFLAGS} .
 
 .PHONY: clean
 clean:
 	if [ -f ${BINARY} ] ; then rm ${BINARY} ; fi
 
+
 $(ASSETS): $(ASSET_SOURCES)
+	echo "assets are $(ASSET_SOURCES)"
 	go generate -x ./tfproject
 
-
+docs: $(DOC_SOURCES)
+	cd build; go run build.go ../docs
 
 test: $(BINARY)
 	cd tfproject ; go test $(LDFLAGS) .
