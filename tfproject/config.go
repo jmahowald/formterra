@@ -33,3 +33,14 @@ const Env = "env"
 
 // Owner used to tag instances
 const Owner = "owner"
+
+// var Context struct {
+// 	Arguments string
+// }
+
+// type Context struct {
+// 	Arguments string
+// 	Date time
+// }
+
+// func (x Context) Now

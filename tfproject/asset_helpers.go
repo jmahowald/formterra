@@ -17,15 +17,19 @@ func isSet(key string) bool {
 	return TfConfig.IsSet(key)
 }
 
-//GetSt
 func getString(key string) string {
 	return TfConfig.GetString(key)
+}
+
+func getCalledArgs() []string {
+	return os.Args
 }
 
 var funcMap = template.FuncMap{
 	"IsSet":     isSet,
 	"GetString": getString,
 	"Version":   formTerraVersion,
+	"CLIArgs":   getCalledArgs,
 }
 
 // TODO this seems like it's a base interace

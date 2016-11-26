@@ -23,6 +23,7 @@ import (
 
 var uris []string
 var name string
+var generate bool
 
 // inspectCmd represents the inspect command
 var inspectCmd = &cobra.Command{
@@ -61,6 +62,9 @@ var inspectCmd = &cobra.Command{
 		}
 		write(data)
 
+		if generate {
+			skel.GenerateSkeleton()
+		}
 	},
 }
 
@@ -68,4 +72,28 @@ func init() {
 	moduleCmd.AddCommand(inspectCmd)
 	inspectCmd.Flags().StringVar(&name, "name", "", "name for the resulting project skeleton (required)")
 	inspectCmd.Flags().StringSliceVarP(&uris, "uri", "u", []string{}, "uri to be inspected (can specify multiple)")
+	inspectCmd.Flags().BoolVarP(&generate, "gen", "g", false, "generate a skeleton as well")
+
+	moduleCmd.AddCommand(genTerraformCommand)
+
+}
+
+// genTerraformCommand represents the command to generate a skeleton based off a project defintion
+var genTerraformCommand = &cobra.Command{
+	Use: "gen",
+
+	Short: "Generates terraform to call modules from a skeleton",
+	Long: `Generates terraform necessary to interact with
+	existing terraform modules
+	`,
+
+	Run: func(cmd *cobra.Command, args []string) {
+		input := read()
+		var skeleton = tf.TerraformProjectSkeleton{}
+		err := skeleton.UnmarshalYAML(input)
+		if err != nil {
+			log.Fatal("error parsing %s:%s", projectConfig, err)
+		}
+		skeleton.GenerateSkeleton()
+	},
 }

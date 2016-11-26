@@ -14,12 +14,6 @@
 
 package cmd
 
-import (
-	log "github.com/Sirupsen/logrus"
-	tf "github.com/jmahowald/formterra/tfproject"
-	"github.com/spf13/cobra"
-)
-
 // TfClientRequest
 type TfClientRequest struct {
 	Uri               string
@@ -32,27 +26,27 @@ var projectConfig string
 var projectName string
 var clientRequest TfClientRequest
 
-// clientCmd represents the client command
-var clientCmd = &cobra.Command{
-	Use: "client",
+// // clientCmd represents the client command
+// var clientCmd = &cobra.Command{
+// 	Use: "client",
 
-	Short: "Generates terraform to call modules",
-	Long: `Generates terraform necessary to interact with
-	existing terraform modules
-	`,
+// 	Short: "Generates terraform to call modules",
+// 	Long: `Generates terraform necessary to interact with
+// 	existing terraform modules
+// 	`,
 
-	Run: func(cmd *cobra.Command, args []string) {
-		input := read()
-		var skeleton = tf.TerraformProjectSkeleton{}
-		err := skeleton.UnmarshalYAML(input)
-		if err != nil {
-			log.Fatal("error parsing %s:%s", projectConfig, err)
-		}
-		skeleton.GenerateSkeleton()
-	},
-}
+// 	Run: func(cmd *cobra.Command, args []string) {
+// 		input := read()
+// 		var skeleton = tf.TerraformProjectSkeleton{}
+// 		err := skeleton.UnmarshalYAML(input)
+// 		if err != nil {
+// 			log.Fatal("error parsing %s:%s", projectConfig, err)
+// 		}
+// 		skeleton.GenerateSkeleton()
+// 	},
+// }
 
-func init() {
-	moduleCmd.AddCommand(clientCmd)
-	clientCmd.Flags().StringVarP(&projectName, "name", "n", "", "project name")
-}
+// func init() {
+// 	moduleCmd.AddCommand(clientCmd)
+// 	clientCmd.Flags().StringVarP(&projectName, "name", "n", "", "project name")
+// }
