@@ -1,3 +1,5 @@
 formterra
 pkg/
 vendor/
+testresults/
+.vscode/
