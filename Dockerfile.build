@@ -1,0 +1,10 @@
+FROM golang
+
+# Thanks
+ADD Makefile /Makefile
+WORKDIR /
+
+ADD . /go/src/github.com/jmahowald/formterra/ 
+ADD vendor /vendor
+RUN make buildgo
+CMD ["/bin/bash"]

@@ -1,0 +1,17 @@
+# Create a minimal container to run a Golang static binary
+
+#Build directory: None
+#tag: cloud-workstation
+FROM gliderlabs/alpine:3.3
+
+MAINTAINER Josh Mahowald "joshua.mahowald@gmail.com"
+
+#formterra uses installed git to fetch terraform modules
+RUN apk add --no-cache --update \
+    ca-certificates git
+
+ADD formterralinux /
+
+WORKDIR /data
+CMD "/formterralinux"
+
