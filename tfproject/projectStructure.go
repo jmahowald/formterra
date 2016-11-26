@@ -87,7 +87,6 @@ type TerraformProject interface {
 // on another layer
 // The layers are stored in a consistent directory
 type TerraformLayer struct {
+	//TODO this hasn't really been used. Do away with it?
 	Name string
-	// Type string
-	// SourceURI    string
 }

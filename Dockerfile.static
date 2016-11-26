@@ -13,5 +13,5 @@ RUN apk add --no-cache --update \
 ADD formterralinux /
 
 WORKDIR /data
-CMD "/formterralinux"
+ENTRYPOINT "/formterralinux"
 
