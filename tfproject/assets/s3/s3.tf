@@ -1,13 +1,6 @@
-variable "aws_region" {
-  default = "us-east-1"
-}
-
-provider "aws" {
-    region     = "${var.aws_region}"
-}
 
 resource "aws_s3_bucket" "default" {
-    bucket = "{{.BucketName}}/{{.Fqdn}}"
+    bucket = "{{.BucketName}}.{{.Fqdn}}"
     acl = "private"
     {{  if not .UnVersioned }}
       versioning {
