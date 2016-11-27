@@ -20,6 +20,7 @@ type VarMappings []VarMapping
 type VarMapping struct {
 	VarName      string
 	VarValuePath []string
+	Type         string
 }
 
 //TerraformModuleDefinition Base object for working
@@ -56,6 +57,7 @@ type FromModuleMappings struct {
 type FromRemoteMappings struct {
 	RemoteSourceName string                 `json:"source_name"`
 	Mappings         []BasicVariableMapping `json:"mappings"`
+	Config           map[string]string      `json:"config,omitempty"`
 }
 
 //BasicVariableMappings a list of variables to map in.
@@ -66,6 +68,7 @@ type BasicVariableMappings []BasicVariableMapping
 type BasicVariableMapping struct {
 	VarName       string `json:"var_name"`
 	SourceVarName string `json:"source_var_name,omitempty"`
+	Type          string `json:"type,omitempty"`
 }
 
 // TerraformProjectSkeleton a terraform project

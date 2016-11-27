@@ -39,8 +39,9 @@ var moduleCmd = &cobra.Command{
 var output string
 var input string
 
-func read() []byte {
+func getReader() (io.Reader, error) {
 	var reader io.Reader
+
 	if input == "" || input == "-" {
 		reader = os.Stdin
 	} else {
@@ -48,7 +49,29 @@ func read() []byte {
 		if err != nil {
 			log.Fatalf("Could not open %s for reading", input)
 		}
-		defer reader.Close()
+		return reader, err
+	}
+	return reader, nil
+}
+
+func getWriter() (io.Writer, error) {
+	if output == "" || output == "-" {
+		return os.Stdout, nil
+	} else {
+		writer, err := os.Create(output)
+		if err != nil {
+			log.Fatalf("Could not open %s for writing", output)
+			return writer, err
+		}
+		return writer, nil
+	}
+}
+
+func read() []byte {
+	var reader io.Reader
+	reader, err := getReader()
+	if err != nil {
+		log.Fatalf("Could not open %s for reading", input)
 	}
 	data, err := ioutil.ReadAll(reader)
 	if err != nil {
@@ -59,16 +82,12 @@ func read() []byte {
 
 func write(data []byte) {
 	var writer io.Writer
-	if output == "" || output == "-" {
-		writer = os.Stdout
-	} else {
-		writer, err := os.Create(output)
-		if err != nil {
-			log.Fatalf("Could not open %s for writing", output)
-		}
-		defer writer.Close()
+	writer, err := getWriter()
+	if err != nil {
+		log.Fatalf("Could not open %s for writing", output)
 	}
-	_, err := fmt.Fprint(writer, string(data))
+	//defer writer.Close()
+	_, err = fmt.Fprint(writer, string(data))
 	if err != nil {
 		log.Fatalf("Problem writing to %s", writer)
 	}

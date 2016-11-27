@@ -40,7 +40,7 @@ docs: $(DOC_SOURCES)
 	cd build; go run build.go ../docs
 
 test: $(BINARY)
-	go test $(LDFLAGS) tfproject
+	cd tfproject; go test $(LDFLAGS) .
 
 vendor:
 	glide install

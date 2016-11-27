@@ -89,6 +89,10 @@ modules:
       var_name: foo
     - var_name: bar2
       source_var_name: mod3var
+    config:
+      bucket: mytestingbucket
+      key: mytestingbucketkey
+      region: us-east-1
   vars:
   - source_var_name: var1_in
     var_name: var1_out
@@ -108,28 +112,33 @@ func (s *MySuite) TestModuleMarshalling(c *C) {
 			FromModuleMappings{
 				"mod2",
 				[]BasicVariableMapping{
-					BasicVariableMapping{"foo", "mod2_out"},
+					BasicVariableMapping{"foo", "mod2_out", ""},
 					BasicVariableMapping{VarName: "bar"},
 				},
 			},
 			FromModuleMappings{
 				"mod3",
 				[]BasicVariableMapping{
-					BasicVariableMapping{"value3", "mod3var"},
+					BasicVariableMapping{"value3", "mod3var", ""},
 				},
 			},
 		},
 		RemoteVariables: []FromRemoteMappings{
 			FromRemoteMappings{
-				"vpc_layer",
-				[]BasicVariableMapping{
-					BasicVariableMapping{"foo", "remote1_out"},
-					BasicVariableMapping{"bar2", "mod3var"},
+				RemoteSourceName: "vpc_layer",
+				Mappings: []BasicVariableMapping{
+					BasicVariableMapping{"foo", "remote1_out", ""},
+					BasicVariableMapping{"bar2", "mod3var", ""},
+				},
+				Config: map[string]string{
+					"bucket": "mytestingbucket",
+					"key":    "mytestingbucketkey",
+					"region": "us-east-1",
 				},
 			},
 		},
 		Variables: []BasicVariableMapping{
-			BasicVariableMapping{"var1_out", "var1_in"},
+			BasicVariableMapping{"var1_out", "var1_in", ""},
 			BasicVariableMapping{VarName: "bar3"},
 		},
 	}

@@ -12,3 +12,4 @@ practices.
 
 [See Usage](docs/formterra.md)
 
+./formterra module inspect -u tfproject/test-fixtures/simpleterraform -u git::ssh://git@github.com/jmahowald/terraform-aws-vpc.git//modules/network --name joshtest | ./formterra module client

@@ -35,7 +35,7 @@ func (v BasicVariableMapping) interpolationPath(prefix []string) VarMapping {
 	} else {
 		sourceName = v.VarName
 	}
-	return VarMapping{v.VarName, append(prefix, sourceName)}
+	return VarMapping{v.VarName, append(prefix, sourceName), v.Type}
 }
 
 func (m ModuleCall) GetVariables() VarMappings {
