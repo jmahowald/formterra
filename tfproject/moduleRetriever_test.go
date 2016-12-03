@@ -1,9 +1,16 @@
 package tfproject
 
 import (
+	"bytes"
+	"flag"
+	"fmt"
+	"io/ioutil"
+	"path/filepath"
 	"reflect"
 	"testing"
 )
+
+var update = flag.Bool("update", false, "update golden files")
 
 func TestExternalModule_Fetch(t *testing.T) {
 	type fields struct {
@@ -24,7 +31,7 @@ func TestExternalModule_Fetch(t *testing.T) {
 				RequiredVars:  []string{"location"},
 				OptionalVars:  []string{"greeting"},
 				URI:           "./test-fixtures/simpleterraform",
-				localLocation: "target/external/simpleterraform",
+				LocalLocation: "target/external/simpleterraform",
 				Outputs:       []string{"out1", "out2"},
 			},
 			false,
@@ -36,6 +43,18 @@ func TestExternalModule_Fetch(t *testing.T) {
 				Name: tt.fields.Name,
 				URI:  tt.fields.URI,
 			}
+
+			golden := filepath.Join("test-fixtures", tt.name+".golden")
+			if *update {
+				ioutil.WriteFile(golden, []byte("actual"), 0644)
+
+			}
+
+			expected, _ := ioutil.ReadFile(golden)
+			if !bytes.Equal([]byte("actual"), expected) {
+				fmt.Printf("placeholder")
+			}
+
 			got, err := m.Fetch()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ExternalModule.Fetch() error = %v, wantErr %v", err, tt.wantErr)

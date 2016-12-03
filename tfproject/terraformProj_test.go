@@ -71,7 +71,10 @@ var projectStruct = `
 name: TestSource
 modules:
 - name: mod1
-  uri: http://testlocation
+  outputs:
+  - out1
+  - out2
+  orig_uri: http://testlocation
   module_vars:
   - module_name: mod2
     mappings:
@@ -104,9 +107,11 @@ func (s *MySuite) TestModuleMarshalling(c *C) {
 	var proj TerraformProjectSkeleton
 
 	moduleCall := ModuleCall{
+
 		TerraformModuleDefinition: TerraformModuleDefinition{
-			Name: "mod1",
-			URI:  "http://testlocation",
+			Name:    "mod1",
+			URI:     "http://testlocation",
+			Outputs: []string{"out1", "out2"},
 		},
 		ModuleVariables: []FromModuleMappings{
 			FromModuleMappings{

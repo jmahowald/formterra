@@ -29,9 +29,9 @@ type TerraformModuleDefinition struct {
 	Name          string
 	RequiredVars  []string `json:"required_vars"`
 	OptionalVars  []string `json:"optional_vars"`
-	Outputs       []string
-	URI           string
-	localLocation string
+	Outputs       []string `json:"outputs"`
+	URI           string   `json:"orig_uri"`
+	LocalLocation string   `json:"local_path"`
 }
 
 // ModuleCall represents a terraform use of a module

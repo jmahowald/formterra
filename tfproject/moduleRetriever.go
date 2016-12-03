@@ -28,34 +28,42 @@ func externaldir() string {
 
 // grabs the remote definition (which might be local)
 func (m ExternalModule) Fetch() (TerraformModuleDefinition, error) {
-	projectDef := TerraformModuleDefinition{URI: m.URI}
-	log.Debug("Attempting to retrieve:", m)
+	moduleDef := TerraformModuleDefinition{URI: m.URI}
 
 	wd, err := os.Getwd()
 	if err != nil {
 		log.Warn("Couldn't get current working directory")
-		return projectDef, err
+		return moduleDef, err
 	}
-	srcURI, err := getter.Detect(m.URI, wd, getter.Detectors)
+
+	baseUri, subdir := getter.SourceDirSubdir(m.URI)
+
+	srcURI, err := getter.Detect(baseUri, wd, getter.Detectors)
+	log.Debugf("base uri is %s subdir is %s", srcURI, subdir)
+
 	if err != nil {
-		log.Warn("Could not detect location of", m.URI, err)
-	}
-	log.Debug("source uri is ", srcURI)
-
-	if projectDef.Name == "" {
-		projectDef.Name = path.Base(srcURI)
+		log.Warnf("Could not detect location of %s:%s", m.URI, err)
+		return moduleDef, err
 	}
 
-	destPath := path.Join(externaldir(), projectDef.Name)
+	if moduleDef.Name == "" {
+		moduleDef.Name = path.Base(m.URI)
+	}
+
+	destPath := path.Join(externaldir(), path.Base(baseUri))
 	err = getter.Get(destPath, srcURI)
 	if err != nil {
 		log.Warn("Unable to retrieve:", srcURI)
-		return projectDef, err
+		return moduleDef, err
 	}
-	projectDef.localLocation = destPath
-	log.Debug("Retrieved:", projectDef)
-	projectDef.loadVars()
-	return projectDef, nil
+	moduleDef.URI = m.URI
+
+	// localLocation, err := filepath.Abs(filepath.Join(destPath, subdir))
+	// if err !
+	moduleDef.LocalLocation = filepath.Join(destPath, subdir)
+
+	moduleDef.loadVars()
+	return moduleDef, nil
 }
 
 type terraformvars []map[string][]map[string]interface{}
@@ -110,7 +118,7 @@ func findRequiredAndOptionalVars(vars terraformvars) projectVars {
 
 func (t *TerraformModuleDefinition) loadVars() error {
 
-	files, _ := filepath.Glob(fmt.Sprintf("%s/*.tf", t.localLocation))
+	files, _ := filepath.Glob(fmt.Sprintf("%s/*.tf", t.LocalLocation))
 
 	for _, tfFile := range files {
 		varConfig := viper.New()
