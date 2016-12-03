@@ -20,5 +20,13 @@ data "terraform_remote_state" "{{$remote.RemoteSourceName}}" {
     {{$key}} = "{{$value}}"{{end}} }
 } {{end}}
 
+
+
+{{ range $output:= .Outputs }}
+output "{{$output}}" { 
+  value = "${module.{{$module.Name}}.{{$output}}}"
+} {{end}}
+
+
 {{end}}  
 
