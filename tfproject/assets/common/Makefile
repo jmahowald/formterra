@@ -10,12 +10,12 @@ TF_FILES=$(wildcard *.tf)
 
 
 # If you define a bucket name and bucket prefix
-# all will include storing off the remote state 
+# all will include storing off the remote state
 # protected witha  guard
 
 REMOTE_INIT_FILE = remote_state.txt
-REMOTE_STATE_BUCKET ?= 
-REMOTE_STATE_PREFIX ?= 
+REMOTE_STATE_BUCKET ?=
+REMOTE_STATE_PREFIX ?=
 REMOTE_STATE_BUCKET_REGION ?=
 
 # TODO figureo ut how to to do and
@@ -32,10 +32,11 @@ endif
 
 
 
-.PHONY: plan refresh apply clean 
+.PHONY: plan refresh apply clean
 
 .terraform: $(TF_FILES)
 	terraform get --update
+	for i in $$(ls .terraform/modules/*/Makefile); do i=$$(dirname $$i); echo "Trying make in $$i"; make -C $$i; done
 
 plan: $(TF_FILES) .terraform
 	terraform plan -out terraform.tfplan $(TF_VAR_ARGS)
@@ -55,7 +56,7 @@ clean:
 	rm -rf terraform.tfstate
 	rm -rf terraform.tfplan
 
-$(REMOTE_INIT_FILE): 
+$(REMOTE_INIT_FILE):
 	@echo "initialise remote statefile"
 	terraform remote config -backend=s3 \
 	-backend-config="bucket=$(REMOTE_STATE_BUCKET)" \

@@ -1,6 +1,11 @@
 package tfproject
 
 // TODO make sure name doesn't have periods in it
+
+type CorsConfig struct {
+	AllowedOrigins string
+}
+
 type S3BucketID struct {
 	Fqdn       string
 	BucketName string
@@ -11,6 +16,7 @@ type S3BucketRequest struct {
 	S3BucketID
 	UnVersioned bool
 	CreateUser  bool
+	Cors        CorsConfig
 }
 
 // Create Creates a terraform layer to create an s3 bucket

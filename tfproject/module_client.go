@@ -35,7 +35,7 @@ func (v BasicVariableMapping) interpolationPath(prefix []string) VarMapping {
 	} else {
 		sourceName = v.VarName
 	}
-	return VarMapping{v.VarName, append(prefix, sourceName), v.Type}
+	return VarMapping{v.VarName, append(prefix, sourceName), v.Type, v.DefaultValue}
 }
 
 func (m ModuleCall) GetVariables() VarMappings {
@@ -57,9 +57,17 @@ func (t TerraformProjectSkeleton) GetAllVars() VarMappings {
 	// Default of 20 mappings. No good reason for this
 	// heuristic. because we use append we don't really
 	// worry about this being to small
+	encountered := map[string]bool{}
+
 	mappings := make([]VarMapping, 0, 20)
 	for _, module := range t.Modules {
-		mappings = append(mappings, module.Variables.getTerraformMappings()...)
+		for _, moduleVar := range module.Variables.getTerraformMappings() {
+			if encountered[moduleVar.VarName] == true { //duplicate
+			} else {
+				encountered[moduleVar.VarName] = true
+				mappings = append(mappings, moduleVar)
+			}
+		}
 	}
 	return mappings
 }
@@ -101,7 +109,7 @@ func (remote FromRemoteMappings) getTerraformMappings() VarMappings {
 // CreateSkeleton Transforms a set of modules into a skeleton
 func CreateSkeleton(mods []TerraformModuleDefinition, name string) TerraformProjectSkeleton {
 	skel := TerraformProjectSkeleton{}
-	skel.TerraformLayer = TerraformLayer{name}
+	skel.TerraformLayer = TerraformLayer{Name: name}
 	for _, mod := range mods {
 		modVars := make([]BasicVariableMapping, len(mod.RequiredVars))
 		for i, variable := range mod.RequiredVars {

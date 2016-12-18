@@ -2,6 +2,15 @@
 resource "aws_s3_bucket" "default" {
     bucket = "{{.BucketName}}.{{.Fqdn}}"
     acl = "private"
+
+
+    cors_rule {
+      allowed_headers = ["*"]
+      allowed_methods = ["PUT","POST"]
+      allowed_origins = [{{.Cors.AllowedOrigins}}]
+      max_age_seconds = 3000
+    }
+
     {{  if not .UnVersioned }}
       versioning {
         enabled = true

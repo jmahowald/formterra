@@ -39,6 +39,7 @@ func TestS3BucketCreate(t *testing.T) {
 		S3BucketID{"my.test", "testingbucket"},
 		true,
 		true,
+		CorsConfig{},
 	}
 	layer, _ := req.Create()
 	dir, _ := layer.dir()

@@ -100,7 +100,7 @@ modules:
   - source_var_name: var1_in
     var_name: var1_out
   - var_name: bar3
-
+    default: mydefault
 `
 
 func (s *MySuite) TestModuleMarshalling(c *C) {
@@ -117,14 +117,14 @@ func (s *MySuite) TestModuleMarshalling(c *C) {
 			FromModuleMappings{
 				"mod2",
 				[]BasicVariableMapping{
-					BasicVariableMapping{"foo", "mod2_out", ""},
+					BasicVariableMapping{"foo", "mod2_out", "", ""},
 					BasicVariableMapping{VarName: "bar"},
 				},
 			},
 			FromModuleMappings{
 				"mod3",
 				[]BasicVariableMapping{
-					BasicVariableMapping{"value3", "mod3var", ""},
+					BasicVariableMapping{"value3", "mod3var", "", ""},
 				},
 			},
 		},
@@ -132,8 +132,8 @@ func (s *MySuite) TestModuleMarshalling(c *C) {
 			FromRemoteMappings{
 				RemoteSourceName: "vpc_layer",
 				Mappings: []BasicVariableMapping{
-					BasicVariableMapping{"foo", "remote1_out", ""},
-					BasicVariableMapping{"bar2", "mod3var", ""},
+					BasicVariableMapping{"foo", "remote1_out", "", ""},
+					BasicVariableMapping{"bar2", "mod3var", "", ""},
 				},
 				Config: map[string]string{
 					"bucket": "mytestingbucket",
@@ -143,13 +143,13 @@ func (s *MySuite) TestModuleMarshalling(c *C) {
 			},
 		},
 		Variables: []BasicVariableMapping{
-			BasicVariableMapping{"var1_out", "var1_in", ""},
-			BasicVariableMapping{VarName: "bar3"},
+			BasicVariableMapping{"var1_out", "var1_in", "", ""},
+			BasicVariableMapping{VarName: "bar3", DefaultValue: "mydefault"},
 		},
 	}
 
 	expectedProj := TerraformProjectSkeleton{
-		TerraformLayer{"TestSource"},
+		TerraformLayer{Name: "TestSource"},
 		[]ModuleCall{moduleCall},
 	}
 

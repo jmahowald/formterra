@@ -8,7 +8,7 @@ variable "{{$var.VarName}}" { {{ if eq $var.Type "list" }} type="list" {{end}} }
 {{ range $module := .Modules }}
 
 module "{{$module.Name}}" {
-  source = "{{$module.URI}}"
+  source = "{{$module.LocalLocation}}"
   {{ range $key, $mapping := $module.GetVariables }}
   {{$mapping.VarName}} = "{{printf "${%s}" $mapping.VarPath}}"{{ end }}
 }
@@ -23,10 +23,9 @@ data "terraform_remote_state" "{{$remote.RemoteSourceName}}" {
 
 
 {{ range $output:= .Outputs }}
-output "{{$output}}" { 
+output "{{$output}}" {
   value = "${module.{{$module.Name}}.{{$output}}}"
 } {{end}}
 
 
-{{end}}  
-
+{{end}}

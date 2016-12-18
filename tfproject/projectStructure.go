@@ -21,6 +21,7 @@ type VarMapping struct {
 	VarName      string
 	VarValuePath []string
 	Type         string
+	DefaultValue string
 }
 
 //TerraformModuleDefinition Base object for working
@@ -40,8 +41,8 @@ type TerraformModuleDefinition struct {
 // or from variables within the call ing project
 type ModuleCall struct {
 	TerraformModuleDefinition
-	ModuleVariables []FromModuleMappings  `json:"module_vars"`
-	RemoteVariables []FromRemoteMappings  `json:"remote_source_vars"`
+	ModuleVariables []FromModuleMappings  `json:"module_vars,omitempty"`
+	RemoteVariables []FromRemoteMappings  `json:"remote_source_vars,omitempty"`
 	Variables       BasicVariableMappings `json:"vars"`
 }
 
@@ -69,6 +70,7 @@ type BasicVariableMapping struct {
 	VarName       string `json:"var_name"`
 	SourceVarName string `json:"source_var_name,omitempty"`
 	Type          string `json:"type,omitempty"`
+	DefaultValue  string `json:"default,omitempty"`
 }
 
 // TerraformProjectSkeleton a terraform project
@@ -91,5 +93,7 @@ type TerraformProject interface {
 // The layers are stored in a consistent directory
 type TerraformLayer struct {
 	//TODO this hasn't really been used. Do away with it?
-	Name string
+	Name          string
+	LocalLocation string
+	Dependencies  []string
 }

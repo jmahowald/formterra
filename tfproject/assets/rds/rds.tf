@@ -1,9 +1,3 @@
-variable "subnet_ids" {
-  type = "list"
-}
-
-variable "vpc_id"{}
-variable "inbound_security_group_ids" {}
 
 variable "username" {
   default = "root"
@@ -11,6 +5,11 @@ variable "username" {
 variable "multi_az" {
   default = true
 }
+
+variable "db_subnet_group_name" {}
+variable "db_security_group" {}
+
+
 variable "password" {}
 variable "schema_name"{}
 variable "engine" {
@@ -29,10 +28,10 @@ resource "aws_db_instance" "default" {
     allocated_storage = 10
     engine = "${var.engine}"
     engine_version = "${var.engine_version}"
-    identifier = "{{.DBName}}"
+    identifier = "{{.DatabaseName}}"
     instance_class = "${var.instance_class}"
     //TODO figure out what the heck this means
-    final_snapshot_identifier = "{{.DBName}}-final"
+    final_snapshot_identifier = "{{.DatabaseName}}-final"
     publicly_accessible = false
     db_subnet_group_name = "${var.db_subnet_group_name}"
     vpc_security_group_ids = [
@@ -41,7 +40,7 @@ resource "aws_db_instance" "default" {
     multi_az = "${var.multi_az}"
 
     # Database details
-    name = "{{.DBName}}"
+    name = "{{.DatabaseName}}"
     username = "${var.username}"
     password = "${var.password}"
 
