@@ -1,2 +1,2 @@
 {{ range $key, $var := .GetAllVars}}
-{{$var.VarName}}=""{{ end }}
+{{$var.VarName}}="{{$var.DefaultValue}}"{{ end }}

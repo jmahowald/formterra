@@ -162,6 +162,10 @@ func (s *MySuite) TestModuleMarshalling(c *C) {
 	c.Assert(proj, NotNil)
 	c.Assert(proj, DeepEquals, expectedProj)
 
+	//TODO make this be a more precise test
+	remotes := expectedProj.GetAllRemotes()
+	c.Assert(remotes[0].RemoteSourceName, Equals, "vpc_layer")
+
 	vars := proj.GetAllVars()
 	for _, variable := range vars {
 		c.Assert(variable.VarName, Not(Equals), "")

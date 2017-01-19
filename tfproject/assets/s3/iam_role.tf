@@ -9,24 +9,24 @@
 variable "bucket_name" { default = "{{.BucketName}}-bucket" }
 
 resource "aws_iam_role" "s3-ro" {
-  name = "{{.BucketName}}-s3-ro"
+  name = "{{.BucketName}}.{{.Fqdn}}-s3-ro"
   path = "/"
   assume_role_policy = "${data.template_file.s3-principal.rendered}"
 }
 
 resource "aws_iam_role" "s3-rw" {
-  name = "{{.BucketName}}-s3-rw"
+  name = "{{.BucketName}}.{{.Fqdn}}-s3-rw"
   path = "/"
   assume_role_policy = "${data.template_file.s3-principal.rendered}"
 }
 
 resource "aws_iam_policy" "s3-ro" {
-  name = "{{.BucketName}}-s3-ro"
-  policy = "${data.template_file.s3-ro.rendered}"  
+  name = "{{.BucketName}}.{{.Fqdn}}-s3-ro"
+  policy = "${data.template_file.s3-ro.rendered}"
 }
 
 resource "aws_iam_policy" "s3-rw" {
-  name = "{{.BucketName}}-s3-rw"
+  name = "{{.BucketName}}.{{.Fqdn}}-s3-rw"
   policy = "${data.template_file.s3-rw.rendered}"
 }
 

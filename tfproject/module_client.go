@@ -58,7 +58,6 @@ func (t TerraformProjectSkeleton) GetAllVars() VarMappings {
 	// heuristic. because we use append we don't really
 	// worry about this being to small
 	encountered := map[string]bool{}
-
 	mappings := make([]VarMapping, 0, 20)
 	for _, module := range t.Modules {
 		for _, moduleVar := range module.Variables.getTerraformMappings() {
@@ -70,6 +69,25 @@ func (t TerraformProjectSkeleton) GetAllVars() VarMappings {
 		}
 	}
 	return mappings
+}
+
+//GetAllRemotes setups remote data sources, avoiding duplicates
+func (t TerraformProjectSkeleton) GetAllRemotes() []FromRemoteMappings {
+	// heuristic. because we use append we don't really
+	// worry about this being to small
+	encountered := map[string]bool{}
+	mappings := make([]FromRemoteMappings, 0, 2)
+	for _, module := range t.Modules {
+		for _, moduleVar := range module.RemoteVariables {
+			if encountered[moduleVar.RemoteSourceName] == true { //duplicate
+			} else {
+				encountered[moduleVar.RemoteSourceName] = true
+				mappings = append(mappings, moduleVar)
+			}
+		}
+	}
+	return mappings
+
 }
 
 //variableSourceMapper able to get terraform interpolations

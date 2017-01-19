@@ -21,7 +21,7 @@ type VarMapping struct {
 	VarName      string
 	VarValuePath []string
 	Type         string
-	DefaultValue string
+	DefaultValue string `json:"default_value"`
 }
 
 //TerraformModuleDefinition Base object for working
@@ -66,11 +66,14 @@ type BasicVariableMappings []BasicVariableMapping
 
 //BasicVariableMapping takes input from the source and
 //maps it into the given Variable Name for the target
+
 type BasicVariableMapping struct {
 	VarName       string `json:"var_name"`
 	SourceVarName string `json:"source_var_name,omitempty"`
 	Type          string `json:"type,omitempty"`
 	DefaultValue  string `json:"default,omitempty"`
+	// Can have this only if type list
+	// DefaultValues []string `json:"vals,omitempty"`
 }
 
 // TerraformProjectSkeleton a terraform project
