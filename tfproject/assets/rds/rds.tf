@@ -28,7 +28,6 @@ resource "aws_db_instance" "default" {
     allocated_storage = 10
     engine = "${var.engine}"
     engine_version = "${var.engine_version}"
-    identifier = "{{.DatabaseName}}"
     instance_class = "${var.instance_class}"
     //TODO figure out what the heck this means
     final_snapshot_identifier = "{{.DatabaseName}}-final"
