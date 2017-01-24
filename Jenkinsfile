@@ -19,8 +19,8 @@ node {
 
 
    stage 'push'
-   imageName = 'genesyslab/formterra'
-   docker.withRegistry(env.DOCKER_REG, env.DOCKER_REG_CRED_ID) {
+   imageName = 'formterra'
+   docker.withRegistry(env.DOCKER_REG + "/infra", env.DOCKER_REG_CRED_ID) {
      docker.image(imageName).push('latest')
    }
 }
