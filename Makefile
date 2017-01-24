@@ -8,6 +8,7 @@ ASSETS=tfproject/assets.go
 ASSET_SOURCES := $(shell find tfproject/assets/* -type f -print)
 
 DOC_SOURCES := $(shell find cmd -type f -name '*.go')
+DOCKER_TAG ?= $(BINARY)
 
 # H/T https://ariejan.net/2015/10/03/a-makefile-for-golang-cli-tools/
 # VERSION=1.0.0
@@ -64,4 +65,4 @@ buildlinux: vendor
 	chmod 755 ./$(LINUXBINARY)
 
 builddocker:  $(LINUXBINARY)
-	docker build --rm=true --tag=joshmahowald/formterra -f Dockerfile.static .
+	docker build --rm=true --tag=$(DOCKER_TAG) -f Dockerfile.static .
