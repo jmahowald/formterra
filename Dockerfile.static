@@ -10,8 +10,7 @@ MAINTAINER Josh Mahowald "joshua.mahowald@gmail.com"
 RUN apk add --no-cache --update \
     ca-certificates git
 
-ADD formterralinux /
+ADD formterralinux /formterra
 
 WORKDIR /data
-ENTRYPOINT "/formterralinux"
-
+ENTRYPOINT "/formterra
