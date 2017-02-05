@@ -59,5 +59,6 @@ func init() {
 	aclCmd.Flags().StringSliceVarP(&aclRequest.Ports, "port", "p", []string{}, "port.  Can have multiple flags")
 	aclCmd.Flags().BoolVarP(&aclRequest.TCP, "tcp", "t", true, "for tcp")
 	aclCmd.Flags().BoolVarP(&aclRequest.UDP, "udp", "u", false, "for udp")
+	aclCmd.Flags().IntVar(&aclRequest.StartingIndex, "start-index", 1, "Start at rule number")
 
 }

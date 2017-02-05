@@ -5,10 +5,11 @@ resource "aws_network_acl" "main" {
     vpc_id = "${var.vpc_id}"
     ingress {
         protocol = "all"
-        rule_no = 1 
+        rule_no = {{.StartingIndex}}  
         action = "deny"
         from_port=0
         to_port=0
+        cidr_block ="0.0.0.0/0"
     }
     tags {
         Name = "main"
@@ -16,14 +17,15 @@ resource "aws_network_acl" "main" {
 }
 
 
-{{ range $rule := .Rules}}
+{{ range $rule := .GetRules.Rules}}
 resource "aws_network_acl_rule" "in_{{$rule.RuleNumber}}" {
     network_acl_id = "${aws_network_acl.main.id}"
     egress = "false"
     from_port = "{{$rule.Port}}"
     to_port = "{{$rule.Port}}"
-    rule_no = "{{$rule.RuleNumber}}"
+    rule_number = "{{$rule.RuleNumber}}"
+    rule_action = "allow"
     cidr_block = "{{$rule.Cidr}}"
-    protcol = "{{$rule.Protocol}}"
+    protocol = "{{$rule.Protocol}}"
 }
 {{end}}

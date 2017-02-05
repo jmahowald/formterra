@@ -25,8 +25,10 @@ type networkACLRules struct {
 	Rules []rule
 }
 
-func (n NetworkACLAllowRequest) makeRules() networkACLRules {
-	i := n.StartingIndex
+func (n NetworkACLAllowRequest) GetRules() networkACLRules {
+	//We'll use the starting index for the network acl defaults
+	//then add all the other rules
+	i := n.StartingIndex + 1
 	protocols := make([]string, 0, 2)
 	if n.TCP {
 		protocols = append(protocols, "tcp")
@@ -52,7 +54,7 @@ func (n NetworkACLAllowRequest) makeRules() networkACLRules {
 
 // GetData returns itself for template contexts
 func (n NetworkACLAllowRequest) getData() interface{} {
-	return n.makeRules()
+	return n
 }
 
 // Create Creates a terraform layer to create an s3 bucket

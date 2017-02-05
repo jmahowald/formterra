@@ -3,7 +3,7 @@ SOURCES := $(shell find $(SOURCEDIR) -type f -name '*.go')
 # ASSETS := $(shell find $())
 BINARY=formterra
 LINUXBINARY=formterralinux
-GONAME=gihub.com/jmahowald/formterra
+GONAME=github.com/jmahowald/formterra
 ASSETS=tfproject/assets.go
 ASSET_SOURCES := $(shell find tfproject/assets/* -type f -print)
 
