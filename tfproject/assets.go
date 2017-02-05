@@ -14,6 +14,7 @@
 // assets/common/Makefile
 // assets/rds/rds.tf
 // assets/rds/terraform.tfvars.example
+// assets/acls/acls.tf
 // DO NOT EDIT!
 
 package tfproject
@@ -96,7 +97,7 @@ func assetsModule_clientTf() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/module_client.tf", size: 204, mode: os.FileMode(420), modTime: time.Unix(1480815833, 0)}
+	info := bindataFileInfo{name: "assets/module_client.tf", size: 204, mode: os.FileMode(420), modTime: time.Unix(1485292368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -116,7 +117,7 @@ func assetsProjectProjectTf() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/project/project.tf", size: 768, mode: os.FileMode(420), modTime: time.Unix(1483816351, 0)}
+	info := bindataFileInfo{name: "assets/project/project.tf", size: 768, mode: os.FileMode(420), modTime: time.Unix(1485292368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -136,7 +137,7 @@ func assetsProjectTerraformTfvarsExample() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/project/terraform.tfvars.example", size: 87, mode: os.FileMode(420), modTime: time.Unix(1483132120, 0)}
+	info := bindataFileInfo{name: "assets/project/terraform.tfvars.example", size: 87, mode: os.FileMode(420), modTime: time.Unix(1485292368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -156,7 +157,7 @@ func assetsS3Iam_roleTf() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/s3/iam_role.tf", size: 1107, mode: os.FileMode(420), modTime: time.Unix(1484109812, 0)}
+	info := bindataFileInfo{name: "assets/s3/iam_role.tf", size: 1107, mode: os.FileMode(420), modTime: time.Unix(1485292368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -176,7 +177,7 @@ func assetsS3Iam_userTf() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/s3/iam_user.tf", size: 587, mode: os.FileMode(420), modTime: time.Unix(1480104151, 0)}
+	info := bindataFileInfo{name: "assets/s3/iam_user.tf", size: 587, mode: os.FileMode(420), modTime: time.Unix(1485292368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -196,7 +197,7 @@ func assetsS3PolicyS3PrincipalTpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/s3/policy.s3-principal.tpl", size: 209, mode: os.FileMode(420), modTime: time.Unix(1480104151, 0)}
+	info := bindataFileInfo{name: "assets/s3/policy.s3-principal.tpl", size: 209, mode: os.FileMode(420), modTime: time.Unix(1485292368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -216,7 +217,7 @@ func assetsS3PolicyS3RoTpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/s3/policy.s3-ro.tpl", size: 328, mode: os.FileMode(420), modTime: time.Unix(1480104151, 0)}
+	info := bindataFileInfo{name: "assets/s3/policy.s3-ro.tpl", size: 328, mode: os.FileMode(420), modTime: time.Unix(1485292368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -236,7 +237,7 @@ func assetsS3PolicyS3RwTpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/s3/policy.s3-rw.tpl", size: 388, mode: os.FileMode(420), modTime: time.Unix(1480104151, 0)}
+	info := bindataFileInfo{name: "assets/s3/policy.s3-rw.tpl", size: 388, mode: os.FileMode(420), modTime: time.Unix(1485292368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -256,7 +257,7 @@ func assetsS3S3Tf() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/s3/s3.tf", size: 1083, mode: os.FileMode(420), modTime: time.Unix(1482528839, 0)}
+	info := bindataFileInfo{name: "assets/s3/s3.tf", size: 1083, mode: os.FileMode(420), modTime: time.Unix(1485292368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -276,7 +277,7 @@ func assetsS3Template_fileTf() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/s3/template_file.tf", size: 443, mode: os.FileMode(420), modTime: time.Unix(1482526474, 0)}
+	info := bindataFileInfo{name: "assets/s3/template_file.tf", size: 443, mode: os.FileMode(420), modTime: time.Unix(1485292368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -296,7 +297,7 @@ func assetsCommonFormterraManifest() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/common/.formterra.manifest", size: 64, mode: os.FileMode(420), modTime: time.Unix(1480181656, 0)}
+	info := bindataFileInfo{name: "assets/common/.formterra.manifest", size: 64, mode: os.FileMode(420), modTime: time.Unix(1485292368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -316,7 +317,7 @@ func assetsCommonMakefile() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/common/Makefile", size: 743, mode: os.FileMode(420), modTime: time.Unix(1483736686, 0)}
+	info := bindataFileInfo{name: "assets/common/Makefile", size: 743, mode: os.FileMode(420), modTime: time.Unix(1485292368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -336,7 +337,7 @@ func assetsRdsRdsTf() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/rds/rds.tf", size: 1119, mode: os.FileMode(420), modTime: time.Unix(1484156931, 0)}
+	info := bindataFileInfo{name: "assets/rds/rds.tf", size: 1119, mode: os.FileMode(420), modTime: time.Unix(1485292368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -356,7 +357,27 @@ func assetsRdsTerraformTfvarsExample() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/rds/terraform.tfvars.example", size: 27, mode: os.FileMode(420), modTime: time.Unix(1480893709, 0)}
+	info := bindataFileInfo{name: "assets/rds/terraform.tfvars.example", size: 27, mode: os.FileMode(420), modTime: time.Unix(1485292368, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _assetsAclsAclsTf = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\x74\x91\xc1\x6a\xc3\x30\x0c\x86\xef\x7e\x0a\x61\x7a\x4e\xb7\xeb\x20\x97\xed\x5e\xc6\x5e\xc0\xa8\x8e\x52\x4c\x1d\xab\x28\x4e\x4b\x31\x7e\xf7\xe1\x24\x75\xc3\x58\x7b\x28\xe4\xd7\xf7\x4b\xf2\xaf\x2b\x8a\xc3\xa3\x27\xd0\xd7\x8b\x35\xae\xd3\x90\xb2\x52\xfb\xfd\xe7\x1d\x3a\xea\x71\xf2\x11\xd0\x7b\xbe\x41\x60\x88\x82\x7d\xef\xac\x12\x1a\x79\x12\x4b\xa0\xf1\x36\x9a\x40\xf1\xc6\x72\x36\x68\xbd\x06\x3d\xa0\x0b\x1a\x92\x02\x00\x58\x3a\x42\x0b\x7a\x97\xae\x28\xcd\xf2\x9d\xf5\x5c\x74\xe1\x24\x34\x8e\x2b\x5a\x7e\x17\xe1\xc8\x96\x7d\x31\xa0\xf7\xba\x16\x64\xf2\x64\x02\x43\x0b\xef\x50\x45\xb4\xd1\x71\x28\x6c\x47\xe1\xfe\x84\x7b\xe1\xc1\x5c\x58\x62\xfb\x56\xb5\xc8\x5b\x25\xcf\xff\x11\x4f\xdb\xe1\x07\x1c\xa8\x34\x9b\xf7\x5f\xb1\xac\x94\x4a\x09\x04\xc3\x89\x60\x57\xb6\x80\x8f\x16\x9a\x9f\xc9\xd3\x98\xf3\xeb\x18\x4c\x41\x35\x68\x17\x4c\x4a\xb3\x6f\xf6\x1c\xa6\xe1\x48\x92\xf3\x23\x9e\xad\xe3\x11\xd3\x9f\x4e\x4d\x59\xa7\xa9\x99\xd1\x12\x59\x0b\xba\x47\x3f\xd2\x22\xd6\x07\x17\xfd\x31\xef\x9b\x25\xe6\xd5\xb5\xbe\xfe\x55\xf9\x99\xae\xfe\x77\xdb\x19\xb2\xae\x13\x73\xf4\x6c\xcf\x5b\xee\xcb\x75\x95\x28\xd7\x5b\x8f\x57\xa7\xac\x07\x2d\x48\x56\x29\x51\xe8\x72\xfe\x0d\x00\x00\xff\xff\x7d\x0e\x38\xa0\x71\x02\x00\x00")
+
+func assetsAclsAclsTfBytes() ([]byte, error) {
+	return bindataRead(
+		_assetsAclsAclsTf,
+		"assets/acls/acls.tf",
+	)
+}
+
+func assetsAclsAclsTf() (*asset, error) {
+	bytes, err := assetsAclsAclsTfBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "assets/acls/acls.tf", size: 625, mode: os.FileMode(420), modTime: time.Unix(1486262409, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -427,6 +448,7 @@ var _bindata = map[string]func() (*asset, error){
 	"assets/common/Makefile": assetsCommonMakefile,
 	"assets/rds/rds.tf": assetsRdsRdsTf,
 	"assets/rds/terraform.tfvars.example": assetsRdsTerraformTfvarsExample,
+	"assets/acls/acls.tf": assetsAclsAclsTf,
 }
 
 // AssetDir returns the file names below a certain
@@ -470,6 +492,9 @@ type bintree struct {
 }
 var _bintree = &bintree{nil, map[string]*bintree{
 	"assets": &bintree{nil, map[string]*bintree{
+		"acls": &bintree{nil, map[string]*bintree{
+			"acls.tf": &bintree{assetsAclsAclsTf, map[string]*bintree{}},
+		}},
 		"common": &bintree{nil, map[string]*bintree{
 			".formterra.manifest": &bintree{assetsCommonFormterraManifest, map[string]*bintree{}},
 			"Makefile": &bintree{assetsCommonMakefile, map[string]*bintree{}},

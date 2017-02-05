@@ -78,8 +78,7 @@ func init() {
 		filepath.Join(homeDir, ".formterra", "formterra.yml"), "config file")
 	RootCmd.PersistentFlags().BoolVar(&debugLogging, "debug", false, "turn on debug")
 
-	RootCmd.PersistentFlags().StringP(tf.TerraformDir, "d",
-		filepath.Join(homeDir, ".formterra", "terraform"), "directory where generated terraform will go")
+	RootCmd.PersistentFlags().StringP(tf.TerraformDir, "d", ".", "directory where generated terraform will go")
 
 	//TODO should use a contant
 	RootCmd.PersistentFlags().BoolP(tf.Overwrite, "w",
