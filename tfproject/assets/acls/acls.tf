@@ -1,5 +1,7 @@
 variable "vpc_id" {}
-
+variable "subnet_ids" {
+    type="list"
+}
 //By default allow no traffic
 resource "aws_network_acl" "main" {
     vpc_id = "${var.vpc_id}"
