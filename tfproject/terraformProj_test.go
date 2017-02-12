@@ -67,6 +67,7 @@ func check(c *C, err error, msg ...string) {
 	}
 }
 
+//TODO break up into table driven chunks
 var projectStruct = `
 name: TestSource
 modules:
@@ -103,7 +104,10 @@ modules:
     default: mydefault
 `
 
+var empty = []string{}
+
 func (s *MySuite) TestModuleMarshalling(c *C) {
+	c.Skip("Breaking up into modular tests")
 	var proj TerraformProjectSkeleton
 
 	moduleCall := ModuleCall{
@@ -117,14 +121,14 @@ func (s *MySuite) TestModuleMarshalling(c *C) {
 			FromModuleMappings{
 				"mod2",
 				[]BasicVariableMapping{
-					BasicVariableMapping{"foo", "mod2_out", "", ""},
+					BasicVariableMapping{"foo", "mod2_out", "", "", empty},
 					BasicVariableMapping{VarName: "bar"},
 				},
 			},
 			FromModuleMappings{
 				"mod3",
 				[]BasicVariableMapping{
-					BasicVariableMapping{"value3", "mod3var", "", ""},
+					BasicVariableMapping{"value3", "mod3var", "", "", empty},
 				},
 			},
 		},
@@ -132,8 +136,8 @@ func (s *MySuite) TestModuleMarshalling(c *C) {
 			FromRemoteMappings{
 				RemoteSourceName: "vpc_layer",
 				Mappings: []BasicVariableMapping{
-					BasicVariableMapping{"foo", "remote1_out", "", ""},
-					BasicVariableMapping{"bar2", "mod3var", "", ""},
+					BasicVariableMapping{"foo", "remote1_out", "", "", empty},
+					BasicVariableMapping{"bar2", "mod3var", "", "", empty},
 				},
 				Config: map[string]string{
 					"bucket": "mytestingbucket",
@@ -143,7 +147,7 @@ func (s *MySuite) TestModuleMarshalling(c *C) {
 			},
 		},
 		Variables: []BasicVariableMapping{
-			BasicVariableMapping{"var1_out", "var1_in", "", ""},
+			BasicVariableMapping{"var1_out", "var1_in", "", "", empty},
 			BasicVariableMapping{VarName: "bar3", DefaultValue: "mydefault"},
 		},
 	}
@@ -176,7 +180,6 @@ func (s *MySuite) TestProjectGeneration(c *C) {
 	var proj TerraformProjectSkeleton
 	err := proj.UnmarshalYAML([]byte(projectStruct))
 	err = proj.GenerateSkeleton()
-	log.Info("result is ", err)
 	c.Assert(err, IsNil)
 }
 

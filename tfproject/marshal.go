@@ -5,16 +5,6 @@ import (
 	"github.com/ghodss/yaml"
 )
 
-// TODO this all seems tres redundant.  Could probably just lose it all
-func UnmarshalYAML(data []byte, obj interface{}) error {
-	err := yaml.Unmarshal([]byte(data), obj)
-	if err != nil {
-		log.Warn("err: %v\n", err)
-		return err
-	}
-	return nil
-}
-
 // UnmarshalYAML populate a skeleton from yaml
 func (t *TerraformProjectSkeleton) UnmarshalYAML(data []byte) error {
 	err := yaml.Unmarshal([]byte(data), &t)
@@ -45,4 +35,11 @@ func (t *TerraformModuleDefinition) UnmarshalYAML(data []byte) error {
 		return err
 	}
 	return nil
+}
+
+// Utility function to make testing slightly easier
+func skelFromYaml(data []byte) (*TerraformProjectSkeleton, error) {
+	t := TerraformProjectSkeleton{}
+	err := t.UnmarshalYAML(data)
+	return &t, err
 }

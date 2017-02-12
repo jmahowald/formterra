@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -72,6 +73,12 @@ Modules:
 		{"testwithlists",
 			`
 Name:listtest
+Modules:
+- Name: simple
+  local_path: test-fixtures/simple
+  vars:
+  - var_name: location
+    default: world
 
 
 	`,
@@ -97,7 +104,69 @@ Name:listtest
 			if out.buff.String() != string(expected) {
 				t.Errorf("TerraformProjectSkeleton.MarshalYAML() = %s, want %s", out.buff.String(), expected)
 			}
+		})
+	}
+}
 
+func TestSkelFromYaml(t *testing.T) {
+	type args struct {
+		data string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantT   TerraformProjectSkeleton
+		wantErr bool
+	}{{"outputs", args{
+		`
+name: TestModuleOut
+modules:
+- name: mod1
+  outputs:
+  - out1
+  - out2
+`},
+		TerraformProjectSkeleton{TerraformLayer{Name: "TestModuleOut"},
+			[]ModuleCall{
+				ModuleCall{TerraformModuleDefinition: TerraformModuleDefinition{Name: "mod1", Outputs: []string{"out1", "out2"}}},
+			}},
+		false},
+		{"default values", args{
+			`
+name: TestDefault
+modules:
+- name: mod
+  vars:
+  - var_name: vpc_id
+  - var_name: env
+    default: testing
+  - var_name: tags
+    defaults:
+    - owner=Josh
+    - keep
+`},
+			TerraformProjectSkeleton{TerraformLayer{Name: "TestDefault"},
+				[]ModuleCall{
+					ModuleCall{TerraformModuleDefinition: TerraformModuleDefinition{Name: "mod"},
+						Variables: []BasicVariableMapping{BasicVariableMapping{VarName: "vpc_id"},
+							BasicVariableMapping{VarName: "env", DefaultValue: "testing"},
+							BasicVariableMapping{VarName: "tags", DefaultValues: []string{"owner=Josh", "keep"}},
+						}},
+				},
+			},
+			false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotT := TerraformProjectSkeleton{}
+			err := gotT.UnmarshalYAML([]byte(tt.args.data))
+			if (err != nil) != tt.wantErr {
+				t.Errorf("SkelFromYaml() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(gotT, tt.wantT) {
+				t.Errorf("SkelFromYaml() = %v, want %v", gotT, tt.wantT)
+			}
 		})
 	}
 }

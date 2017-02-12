@@ -73,7 +73,7 @@ type BasicVariableMapping struct {
 	Type          string `json:"type,omitempty"`
 	DefaultValue  string `json:"default,omitempty"`
 	// Can have this only if type list
-	// DefaultValues []string `json:"vals,omitempty"`
+	DefaultValues []string `json:"defaults,omitempty"`
 }
 
 // TerraformProjectSkeleton a terraform project
@@ -98,5 +98,4 @@ type TerraformLayer struct {
 	//TODO this hasn't really been used. Do away with it?
 	Name          string
 	LocalLocation string
-	Dependencies  []string
 }
