@@ -2,15 +2,12 @@ package tfproject
 
 import (
 	"bytes"
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
 	"reflect"
 	"testing"
 )
-
-var update = flag.Bool("update", false, "update golden files")
 
 func TestExternalModule_Fetch(t *testing.T) {
 	type fields struct {

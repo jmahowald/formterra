@@ -2,6 +2,7 @@ package tfproject
 
 import (
 	"html/template"
+	"io"
 	"os"
 	"path/filepath"
 
@@ -38,6 +39,13 @@ type templateIterator interface {
 	getTemplates() ([]string, error)
 }
 
+type writerFactory interface {
+	getWriter(string) (io.Writer, error)
+}
+
+type fileWriter struct {
+	targetDir string
+}
 type AssetTemplates struct {
 	assetFolder string
 }
@@ -59,6 +67,22 @@ func (at AssetTemplates) loadTemplate(name string) ([]byte, error) {
 	return Asset(filepath.Join("assets", at.assetFolder, name))
 }
 
+func (f fileWriter) getWriter(name string) (file io.Writer, err error) {
+	_, err = os.Stat(f.targetDir)
+	if err != nil {
+		log.Warnf("No directory at %s:%s", f.targetDir, err)
+		os.MkdirAll(f.targetDir, 0755)
+	}
+	//Now open the file to write it to and execute
+	destFileName := filepath.Join(f.targetDir, name)
+	file, err = os.Create(destFileName)
+	if err != nil {
+		log.Warnf("Unable to create file at %s for writing:%v", destFileName, err)
+		return
+	}
+	return
+}
+
 // GenerateSkeleton creates a terraform project
 func (t TerraformProjectSkeleton) GenerateSkeleton() error {
 	//For now ignore if the directory already exists
@@ -72,9 +96,10 @@ func (t TerraformProjectSkeleton) getData() interface{} {
 }
 
 func processAssetTemplates(targetdir string, dirs []string, context TemplateContext) error {
+	targetWriter := fileWriter{targetdir}
 	for _, dir := range dirs {
 		tpls := AssetTemplates{dir}
-		err := ProcessTemplates(targetdir, tpls, context)
+		err := processTemplates(targetWriter, tpls, context)
 		if err != nil {
 			log.Warnf("Couldn't process %s", tpls, err)
 			return err
@@ -84,13 +109,7 @@ func processAssetTemplates(targetdir string, dirs []string, context TemplateCont
 }
 
 // ProcessTemplates will go through all the templates in a given directory and execute them
-func ProcessTemplates(targetdir string, templater templateIterator, context TemplateContext) error {
-	log.Debugf("Processings templates with %s to be placed in %s", templater, targetdir)
-	_, err := os.Stat(targetdir)
-	if err != nil {
-		log.Warnf("No directory at %s:%s", targetdir, err)
-		os.MkdirAll(targetdir, 0755)
-	}
+func processTemplates(writerFactory writerFactory, templater templateIterator, context TemplateContext) error {
 
 	templates, err := templater.getTemplates()
 	if err != nil {
@@ -99,25 +118,25 @@ func ProcessTemplates(targetdir string, templater templateIterator, context Temp
 	}
 	for _, name := range templates {
 		// First load the template and parse it
-		log.Debugf("Processing template:%s", name)
 		templateBytes, err := templater.loadTemplate(name)
 		if err != nil {
 			log.Fatalf("Unable to retrieve template file %s:%v", name, err)
 			return err
 		}
 		tmpl := template.Must(template.New(name).Funcs(funcMap).Parse(string(templateBytes)))
+		log.Debugf("Processing template:%s", name)
 
-		//Now open the file to write it to and execute
-		destFileName := filepath.Join(targetdir, name)
-		file, err := os.Create(destFileName)
+		file, err := writerFactory.getWriter(name)
 		if err != nil {
-			log.Warnf("Unable to create file at %s for writing:%v", destFileName, err)
+			log.Warnf("Unable to create file for %s for writing:%s", name, err)
 			return err
 		}
+		log.Debugf("Going to write into %s into %v ", file, context.getData())
 		if err := tmpl.Execute(file, context.getData()); err != nil {
 			log.Warnf("Unable to process template %s:%s", name, err)
 			return err
 		}
+
 	}
 	return nil
 }
