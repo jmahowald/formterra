@@ -1,0 +1,26 @@
+name: TestSource
+modules:
+- name: mod1
+  uri: tfproject/test-fixtures/simpleterraform
+  module_vars:
+  - module_name: mod2
+    mappings:
+    - source_var_name: mod2_out
+      var_name: foo
+    - var_name: bar
+  -  module_name: mod3
+     mappings:
+     - var_name: value3
+       source_var_name: mod3var
+  remote_source_vars:
+  - source_name: vpc_layer
+    mappings:
+    - source_var_name: remote1_out
+      var_name: foo
+    - var_name: bar2
+      source_var_name: mod3var
+  vars:
+  - source_var_name: var1_in
+    var_name: var1_out
+  - var_name: bar3
+

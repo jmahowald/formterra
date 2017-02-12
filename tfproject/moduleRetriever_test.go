@@ -1,10 +1,6 @@
 package tfproject
 
 import (
-	"bytes"
-	"fmt"
-	"io/ioutil"
-	"path/filepath"
 	"reflect"
 	"testing"
 )
@@ -26,7 +22,7 @@ func TestExternalModule_Fetch(t *testing.T) {
 			TerraformModuleDefinition{
 				Name:          "simpleterraform",
 				RequiredVars:  []string{"location"},
-				OptionalVars:  []string{"greeting"},
+				OptionalVars:  []string{"greeting", "values"},
 				URI:           "./test-fixtures/simpleterraform",
 				LocalLocation: "target/external/simpleterraform",
 				Outputs:       []string{"out1", "out2"},
@@ -41,16 +37,15 @@ func TestExternalModule_Fetch(t *testing.T) {
 				URI:  tt.fields.URI,
 			}
 
-			golden := filepath.Join("test-fixtures", tt.name+".golden")
-			if *update {
-				ioutil.WriteFile(golden, []byte("actual"), 0644)
+			// golden := filepath.Join("test-fixtures", tt.name+".golden")
+			// if *update {
+			// 	ioutil.WriteFile(golden, []byte("actual"), 0644)
+			// }
 
-			}
-
-			expected, _ := ioutil.ReadFile(golden)
-			if !bytes.Equal([]byte("actual"), expected) {
-				fmt.Printf("placeholder")
-			}
+			// expected, _ := ioutil.ReadFile(golden)
+			// if !bytes.Equal([]byte("actual"), expected) {
+			// 	fmt.Printf("placeholder")
+			// }
 
 			got, err := m.Fetch()
 			if (err != nil) != tt.wantErr {

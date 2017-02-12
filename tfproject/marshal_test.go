@@ -22,9 +22,29 @@ func (b projectBufferData) getWriter(name string) (io.Writer, error) {
 	if strings.Index(name, "project.tf") != -1 {
 		return b.buff, nil
 	} else {
-		//Ignoring output for file and giving new buffer
-		return &bytes.Buffer{}, nil
+		return ioutil.Discard, nil
 	}
+}
+
+type localFileTemplateIterator struct {
+	subdir string
+}
+
+var projectAssetsTemplates = localFileTemplateIterator{"assets/project"}
+
+func (l localFileTemplateIterator) getTemplates() (filenames []string, err error) {
+	files, err := ioutil.ReadDir(l.subdir)
+	if err != nil {
+		return
+	}
+	for _, f := range files {
+		filenames = append(filenames, f.Name())
+	}
+	return
+}
+
+func (l localFileTemplateIterator) loadTemplate(name string) ([]byte, error) {
+	return ioutil.ReadFile(filepath.Join(l.subdir, name))
 }
 
 var update = flag.Bool("update", false, "update golden files")
@@ -49,6 +69,13 @@ Modules:
     default: world
 `,
 		false},
+		{"testwithlists",
+			`
+Name:listtest
+
+
+	`,
+			false},
 	}
 
 	for _, tt := range tests {
@@ -57,10 +84,9 @@ Modules:
 			if err := ts.UnmarshalYAML([]byte(tt.input)); (err != nil) != tt.wantErr {
 				t.Errorf("TerraformProjectSkeleton.UnmarshalYAML() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			tplHandler := AssetTemplates{"project"}
 			var b bytes.Buffer
 			out := projectBufferData{&b}
-			processTemplates(out, tplHandler, ts)
+			processTemplates(out, projectAssetsTemplates, ts)
 			golden := filepath.Join("test-fixtures", tt.name, "golden.tf")
 			if *update {
 				os.MkdirAll(filepath.Join("test-fixtures", tt.name), 0755)

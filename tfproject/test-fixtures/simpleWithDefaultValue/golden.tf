@@ -1,6 +1,5 @@
-variable "location" { 
- default = "world" 
-}
+
+variable "location" {  default = "world" }
 
 module "simple" {
   source = "test-fixtures/simple"
