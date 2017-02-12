@@ -72,16 +72,19 @@ Modules:
 		false},
 		{"testwithlists",
 			`
-Name:listtest
+Name: listtest
 Modules:
 - Name: simple
   local_path: test-fixtures/simple
   vars:
   - var_name: location
     default: world
-
-
-	`,
+  - var_name: values
+    type: list
+    defaults:
+    -  val1
+    -  val2
+    `,
 			false},
 	}
 
