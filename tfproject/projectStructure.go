@@ -32,7 +32,7 @@ type TerraformModuleDefinition struct {
 	RequiredVars  []string `json:"required_vars"`
 	OptionalVars  []string `json:"optional_vars"`
 	Outputs       []string `json:"outputs"`
-	URI           string   `json:"orig_uri"`
+	URI           string   `json:"uri"`
 	LocalLocation string   `json:"local_path"`
 }
 
