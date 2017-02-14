@@ -14,7 +14,7 @@ variable "{{$var.VarName}}" { {{ if eq $var.Type "list" }}
 
 {{ range $module := .Modules }}
 module "{{$module.Name}}" {
-  source = "{{$module.LocalLocation}}"
+  source = "{{$module.GetURI}}"
   {{- range $key, $mapping := $module.GetVariables }}
   {{ $mapping.VarName}} = "{{printf "${%s}" $mapping.VarPath}}"{{ end }}
 }
@@ -23,8 +23,6 @@ module "{{$module.Name}}" {
 output "{{$output}}" {
   value = "${module.{{$module.Name}}.{{$output}}}"
 } {{end}}
-
-
 {{end}}
 
 

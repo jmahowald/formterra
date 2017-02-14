@@ -71,6 +71,13 @@ func (t TerraformProjectSkeleton) GetAllVars() VarMappings {
 	return mappings
 }
 
+func (t TerraformModuleDefinition) GetURI() string {
+	if t.URI != "" {
+		return t.URI
+	}
+	return t.LocalLocation
+}
+
 //GetAllRemotes setups remote data sources, avoiding duplicates
 func (t TerraformProjectSkeleton) GetAllRemotes() []FromRemoteMappings {
 	// heuristic. because we use append we don't really

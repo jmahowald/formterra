@@ -5,11 +5,18 @@ BINARY=formterra
 LINUXBINARY=formterralinux
 GONAME=github.com/jmahowald/formterra
 ASSETS=tfproject/assets.go
-ASSET_SOURCES := $(shell find tfproject/assets/* -type f -print)
+ASSET_SOURCES := $(shell find .$(PROJ_GO_SRC)/tfproject/assets/* -type f -print)
+
+# This allows us to test our packages without testing vendors.
+# H/T https://coderwall.com/p/urusna/test-all-go-packages-in-a-project-without-testing-vendor
+BASE=$(shell echo $PWD | sed "s|$GOPATH/src/||")
+GO_TEST_PACKAGES=$(shell go list $(PROJ_GO_SRC)/... | grep -v vendor | sed "s|$(BASE)/|./|" )
+
 
 DOC_SOURCES := $(shell find cmd -type f -name '*.go')
 DOCKER_TAG ?= $(BINARY)
 
+export PROJ_GO_SRC ?=go/src/github.com/jmahowald/formterra/
 # H/T https://ariejan.net/2015/10/03/a-makefile-for-golang-cli-tools/
 # VERSION=1.0.0
 # BUILD_TIME=`date +%FT%T%z`
@@ -41,10 +48,9 @@ docs: $(DOC_SOURCES)
 	cd build; go run build.go ../docs
 
 test: $(BINARY)
+
 	cd tfproject; go test $(LDFLAGS) .
 
-vendor:
-	glide install
 
 
 
@@ -52,13 +58,16 @@ vendor:
 # Thx - https://developer.atlassian.com/blog/2015/07/osx-static-golang-binaries-with-docker/
 
 
-$(LINUXBINARY): vendor
+$(LINUXBINARY): 
 	$(MAKE) buildlinux
 
-buildgo: 
-	CGO_ENABLED=0 GOOS=linux go build -ldflags "-s" -a -installsuffix cgo -o $(LINUXBINARY) ./go/src/github.com/jmahowald/formterra
+buildtest:
+	echo go test ${LDFLAGS} $(GO_TEST_PACKAGES)
 
-buildlinux: vendor
+buildgo: 
+	CGO_ENABLED=0 GOOS=linux go build -ldflags "-s" -a -installsuffix cgo -o $(LINUXBINARY) ./$(PROJ_GO_SRC)
+
+buildlinux: 
 	docker build -t build-$(BINARY) -f ./Dockerfile.build .
 	docker run -t build-$(BINARY) /bin/true
 	docker cp `docker ps -q -n=1`:/$(LINUXBINARY) .
