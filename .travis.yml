@@ -6,7 +6,7 @@ script:
 - set -e
 - export BUILD_NUMBER=$TRAVIS_BUILD_NUMBER
 - make builddocker
-- docker-push.sh
+- ./docker-push.sh
 before_install:
 - docker login -u $DOCKER_REG_USERNAME -p $DOCKER_REG_PASSWORD $DOCKER_REGISTRY
 - chmod 755 ./docker-push.sh
