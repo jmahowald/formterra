@@ -19,7 +19,7 @@ if ! [ -n "$IMAGE_NAME" ]; then
   exit -1
 fi
 
-REPOSITORY="${REPOSITORY:-hub.docker.com}"
+DOCKER_REGISTRY="${DOCKER_REGISTRY:-hub.docker.com}"
 # Looking at git isn't always correct to find current branch
 # https://graysonkoonce.com/getting-the-current-branch-name-during-a-pull-request-in-travis-ci/
 BUILD_BRANCH="${BUILD_BRANCH:-$(git rev-parse --abbrev-ref HEAD)}"
@@ -59,7 +59,7 @@ else
   ON_BRANCH=true
 	REMOTE_ID=$BUILD_BRANCH
 fi
-tag_and_push $REPOSITORY "$IMAGE_NAME" $REMOTE_ID
+tag_and_push $DOCKER_REGISTRY "$IMAGE_NAME" $REMOTE_ID
 
 # used for major version numbers for instance
 # use only if this new commit has a tag
@@ -71,8 +71,8 @@ TAG=$(git describe --exact-match 2>/dev/null)
 # so we'll only include tags if on master.  Branches should
 # be short lived anyway
 if [ -n "${TAG}" ] &&  [ "$ON_BRANCH" != true ] ; then
-	tag_and_push $REPOSITORY "$IMAGE_NAME" $TAG
+	tag_and_push $DOCKER_REGISTRY "$IMAGE_NAME" $TAG
 fi
 if [ -n "$BUILD_NUMBER" ]; then
-	tag_and_push $REPOSITORY "$IMAGE_NAME" ${REMOTE_ID}-${BUILD_NUMBER}
+	tag_and_push $DOCKER_REGISTRY "$IMAGE_NAME" ${REMOTE_ID}-${BUILD_NUMBER}
 fi
