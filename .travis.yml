@@ -5,7 +5,6 @@ language: golang
 script:
 - set -e
 - export BUILD_NUMBER=$TRAVIS_BUILD_NUMBER
-- make test
 - make builddocker
 - docker-push.sh
 before_install:
