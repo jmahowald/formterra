@@ -1,22 +1,16 @@
-## formterra module inspect
+## formterra module gen
 
-downloads terraform modules and examines them, producing a yaml that you can subsequently use to generate a skeleton
+Generates terraform to call modules from a skeleton
 
 ### Synopsis
 
 
-Use this to generate yaml.  Then edit and create clients for the nodes.
+Generates terraform necessary to interact with
+	existing terraform modules
+	
 
 ```
-formterra module inspect
-```
-
-### Options
-
-```
-  -g, --gen               generate a skeleton as well
-      --name string       name for the resulting project skeleton (required)
-  -u, --uri stringSlice   uri to be inspected (can specify multiple)
+formterra module gen
 ```
 
 ### Options inherited from parent commands
