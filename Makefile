@@ -20,11 +20,11 @@ export PROJ_GO_SRC ?=go/src/github.com/jmahowald/formterra/
 # H/T https://ariejan.net/2015/10/03/a-makefile-for-golang-cli-tools/
 # VERSION=1.0.0
 # BUILD_TIME=`date +%FT%T%z`
-VERSION ?= 0.1
+VERSION ?= 0.2
 BUILD_TIME=$(shell date +%FT%T%z)
 
-LDFLAGS=-ldflags "-X $(GONAME)/core.Version=${VERSION} -X $(GONAME)/core.BuildTime=${BUILD_TIME}"
-
+VERSION_FLAGS=-X $(GONAME)/core.Version=${VERSION} -X $(GONAME)/core.BuildTime=${BUILD_TIME}
+LDFLAGS=-ldflags $(VERSION_FLAGS)
 .DEFAULT_GOAL: $(BINARY)
 
 .PHONY: install clean
@@ -64,8 +64,9 @@ $(LINUXBINARY):
 buildtest:
 	echo go test ${LDFLAGS} $(GO_TEST_PACKAGES)
 
+# TODO figure out how to get build information when building linux in docker
 buildgo: 
-	CGO_ENABLED=0 GOOS=linux go build -ldflags "-s" -a -installsuffix cgo -o $(LINUXBINARY) ./$(PROJ_GO_SRC)
+	CGO_ENABLED=0 GOOS=linux go build -ldflags  "-s" -a -installsuffix cgo -o $(LINUXBINARY) ./$(PROJ_GO_SRC)
 
 buildlinux: 
 	docker build -t build-$(BINARY) -f ./Dockerfile.build .
