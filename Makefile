@@ -5,7 +5,8 @@ BINARY=formterra
 LINUXBINARY=formterralinux
 GONAME=github.com/jmahowald/formterra
 ASSETS=tfproject/assets.go
-ASSET_SOURCES := $(shell find .$(PROJ_GO_SRC)/tfproject/assets/* -type f -print)
+ASSET_SOURCES := $(shell find tfproject/assets/* -type f -print)
+#ASSET_SOURCES := $(shell find .$(PROJ_GO_SRC)/tfproject/assets/* -type f -print)
 
 # This allows us to test our packages without testing vendors.
 # H/T https://coderwall.com/p/urusna/test-all-go-packages-in-a-project-without-testing-vendor
@@ -23,8 +24,9 @@ export PROJ_GO_SRC ?=go/src/github.com/jmahowald/formterra/
 VERSION ?= 0.2
 BUILD_TIME=$(shell date +%FT%T%z)
 
-VERSION_FLAGS=-X $(GONAME)/core.Version=${VERSION} -X $(GONAME)/core.BuildTime=${BUILD_TIME}
-LDFLAGS=-ldflags $(VERSION_FLAGS)
+
+#VERSION_FLAGS=-X $(GONAME)/core.Version=${VERSION} -X $(GONAME)/core.BuildTime=${BUILD_TIME}
+LDFLAGS=-ldflags "-X $(GONAME)/core.Version=${VERSION} -X $(GONAME)/core.BuildTime=${BUILD_TIME}"
 .DEFAULT_GOAL: $(BINARY)
 
 .PHONY: install clean
