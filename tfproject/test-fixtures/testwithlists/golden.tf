@@ -8,10 +8,12 @@ variable "values" {
   ]
 }
   
+variable "rds_password" { }
 module "simple" {
   source = "test-fixtures/simple"
   location = "${var.location}"
   values = "${var.values}"
+  password = "${var.rds_password}"
 }
 
 

@@ -84,6 +84,8 @@ Modules:
     defaults:
     -  val1
     -  val2
+  - var_name: password
+    source_var_name: rds_password
     `,
 			false},
 	}

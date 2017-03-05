@@ -35,7 +35,7 @@ func (v BasicVariableMapping) interpolationPath(prefix []string) VarMapping {
 	} else {
 		sourceName = v.VarName
 	}
-	return VarMapping{v.VarName, append(prefix, sourceName), v.Type, v.DefaultValue, v.DefaultValues}
+	return VarMapping{v.VarName, sourceName, append(prefix, sourceName), v.Type, v.DefaultValue, v.DefaultValues}
 }
 
 func (m ModuleCall) GetVariables() VarMappings {
@@ -61,9 +61,9 @@ func (t TerraformProjectSkeleton) GetAllVars() VarMappings {
 	mappings := make([]VarMapping, 0, 20)
 	for _, module := range t.Modules {
 		for _, moduleVar := range module.Variables.getTerraformMappings() {
-			if encountered[moduleVar.VarName] == true { //duplicate
+			if encountered[moduleVar.SourceVarName] == true { //duplicate
 			} else {
-				encountered[moduleVar.VarName] = true
+				encountered[moduleVar.SourceVarName] = true
 				mappings = append(mappings, moduleVar)
 			}
 		}
@@ -103,9 +103,10 @@ type variableSourceMapper interface {
 }
 
 func (v BasicVariableMappings) getTerraformMappings() VarMappings {
-	mappings := make([]VarMapping, len(v), len(v))
+	mappings := make([]VarMapping, len(v), 2*len(v))
 	prefix := []string{"var"}
 	for i := range v {
+		// mappings = append(mappings, v[i].interpolationPath(prefix))
 		mappings[i] = v[i].interpolationPath(prefix)
 	}
 	return mappings

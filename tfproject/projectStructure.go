@@ -19,6 +19,7 @@ type VarMappings []VarMapping
 // VarMapping maps a required variable to a source for terraform
 type VarMapping struct {
 	VarName       string
+	SourceVarName string
 	VarValuePath  []string
 	Type          string
 	DefaultValue  string `json:"default_value"`

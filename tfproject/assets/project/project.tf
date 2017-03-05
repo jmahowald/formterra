@@ -1,5 +1,5 @@
 {{- range $var := .GetAllVars}}
-variable "{{$var.VarName}}" { {{ if eq $var.Type "list" }} 
+variable "{{$var.SourceVarName}}" { {{ if eq $var.Type "list" }} 
   type="list" 
   default = [
   {{- range $val := $var.DefaultValues }} 
