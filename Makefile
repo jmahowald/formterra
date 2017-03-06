@@ -3,7 +3,7 @@ SOURCES := $(shell find $(SOURCEDIR) -type f -name '*.go')
 # ASSETS := $(shell find $())
 BINARY=formterra
 LINUXBINARY=formterralinux
-GONAME=github.com/backpack/formterra
+GONAME=github.com/backpackhealth/formterra
 ASSETS=tfproject/assets.go
 ASSET_SOURCES := $(shell find tfproject/assets/* -type f -print)
 #ASSET_SOURCES := $(shell find .$(PROJ_GO_SRC)/tfproject/assets/* -type f -print)
@@ -17,7 +17,7 @@ GO_TEST_PACKAGES=$(shell go list $(PROJ_GO_SRC)/... | grep -v vendor | sed "s|$(
 DOC_SOURCES := $(shell find cmd -type f -name '*.go')
 DOCKER_TAG ?= $(BINARY)
 
-export PROJ_GO_SRC ?=go/src/github.com/backpack/formterra/
+export PROJ_GO_SRC ?=go/src/github.com/backpackhealth/formterra/
 # H/T https://ariejan.net/2015/10/03/a-makefile-for-golang-cli-tools/
 # VERSION=1.0.0
 # BUILD_TIME=`date +%FT%T%z`

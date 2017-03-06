@@ -14,7 +14,7 @@
 
 package main
 
-import "github.com/backpack/formterra/cmd"
+import "github.com/backpackhealth/formterra/cmd"
 
 func main() {
 	cmd.Execute()

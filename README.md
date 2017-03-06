@@ -64,4 +64,4 @@ Same doc -
 
 [See Usage](docs/formterra.md)
 
-./formterra module inspect -u tfproject/test-fixtures/simpleterraform -u git::ssh://git@github.com/backpack/terraform-aws-vpc.git//modules/network --name joshtest | ./formterra module client
+./formterra module inspect -u tfproject/test-fixtures/simpleterraform -u git::ssh://git@github.com/backpackhealth/terraform-aws-vpc.git//modules/network --name joshtest | ./formterra module client
