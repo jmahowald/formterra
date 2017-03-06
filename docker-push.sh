@@ -47,10 +47,6 @@ function tag_and_push() {
 ON_BRANCH=false
 REMOTE_ID=""
 
-
-
-
-
 # Grab the tag if it exists.
 # If on master (head on build machiones) Always push to latest
 if [ $BUILD_BRANCH = "master" ] || [ $BUILD_BRANCH = "HEAD"  ]; then
