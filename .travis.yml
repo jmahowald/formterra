@@ -3,7 +3,7 @@ services:
 - docker
 language: go
 go:
-- 1.6
+- 1.7
 script:
 - set -e
 - export BUILD_NUMBER=$TRAVIS_BUILD_NUMBER
@@ -16,7 +16,7 @@ before_install:
 - docker login -u $DOCKER_REG_USERNAME -p $DOCKER_REG_PASSWORD $DOCKER_REGISTRY
 - chmod 755 ./docker-push.sh
 - go get github.com/mitchellh/gox
-- go get github.com/tcnksm/ghr
+- go get -u github.com/tcnksm/ghr
 after_success:
 - gox -output "dist/{{.OS}}_{{.Arch}}_{{.Dir}}"
 - ghr --username $GITHUB_USER --token $GITHUB_TOKEN --replace --prerelease --debug pre-release dist/
