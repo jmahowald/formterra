@@ -8,7 +8,7 @@ script:
 - set -e
 - export BUILD_NUMBER=$TRAVIS_BUILD_NUMBER
 - export BASE=$(echo $PWD | sed "s|$GOPATH/src/||")
-- export GO_TEST_PACKAGES=$(go list ./... | grep -v vendor | sed "s|$(BASE)/|./|" )
+- export GO_TEST_PACKAGES=$(go list ./... | grep -v vendor | sed "s|$BASE/|./|" )
 - go test $GO_TEST_PACKAGES
 # - goveralls -coverprofile=coverage.out -service travis-ci -repotoken $COVERALLS_TOKEN
 
