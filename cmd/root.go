@@ -21,8 +21,8 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 
-	"github.com/jmahowald/formterra/core"
-	tf "github.com/jmahowald/formterra/tfproject"
+	"github.com/backpack/formterra/core"
+	tf "github.com/backpack/formterra/tfproject"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

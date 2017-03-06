@@ -15,7 +15,7 @@
 package cmd
 
 import (
-	tf "github.com/jmahowald/formterra/tfproject"
+	tf "github.com/backpack/formterra/tfproject"
 	"github.com/spf13/cobra"
 )
 
