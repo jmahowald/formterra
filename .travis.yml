@@ -9,21 +9,17 @@ script:
 - GO_TEST_PACKAGES=$(go list ./... | grep -v vendor | sed "s|$(BASE)/|./|" )
 - go test $GO_TEST_PACKAGES
 # - goveralls -coverprofile=coverage.out -service travis-ci -repotoken $COVERALLS_TOKEN
-# 
+
 before_install:
 - docker login -u $DOCKER_REG_USERNAME -p $DOCKER_REG_PASSWORD $DOCKER_REGISTRY
 - chmod 755 ./docker-push.sh
 - go get github.com/mitchellh/gox
 - go get github.com/tcnksm/ghr
-- go get github.com/axw/gocov/gocov
-- go get github.com/mattn/goveralls
-- go get code.google.com/p/go.tools/cmd/cover
 after_success:
+- gox -output "dist/{{.OS}}_{{.Arch}}_{{.Dir}}"
+- ghr --username $GITHUB_USER --token $GITHUB_TOKEN --replace --prerelease --debug pre-release dist/
 - make builddocker
 - "./docker-push.sh"
-- gox -output "dist/{{.OS}}_{{.Arch}}_{{.Dir}}"
-- ghr --username $GITHUB_USER --token $GITHUB_TOKEN --replace --prerelease --debug
-  pre-release dist/
 env:
   global:
   - secure: KJXCRRcmQH+2WKozskAxXiHmwWpnVsnAnEhdwzoy420K2i17kRjV+Xo6DvNOUyMOG7H0fzxVHM25/WUZSO8BsnRKlWOsYrCwV+A9hX/G3T0qWpTdmM4gwU9jGdjxC4WoD/6gGRgDrhuw9Ao3MpzNBCG5zBB5rDjAl9sGkAAf+P+OH9oJB8WuJVcqjHeCY+xsnYC6sEp4ukcWuXNJL9WBS3RKZqTXjnX3w8DwU04jPVW6L/rHFIdzce7mhNba9WUgnPwUVpwmmCbydPt3zv0RjMj8sngUgBFXHR0RFqbU2+5GJhkxRi0e+rqS0olcJWiHOrgSP6CQOUmgn2Kg3aTQHgrqUETyvZ2OE8fgBj98BbZnY+EBQpVgX3nozIzIQRJOyI0TReNJAZ6nrUUD0tVLgtqiOSdhVdR9mfR5c6pWoGM9zQHWd5TixfuDLrluZH6zLiaZJ4LiNAbjAORzEWmB+IvNW3dLRWntP7JLd3lGeA0WrW0OHfnPrfizqtJHV7Ls2lhRyu+a4R1sLtguvh8bxksSpzmS8+mELKXfjioD90g7zxMZ7oM4qr99KqpsEaovEQka9CvGmJZRF42JtOuBD03io5drcShcVIGV1hZo/Zz7vOjqX7VFCCL/kCkG6hpcqCPCz6KS/7q+fkjwiZInqNWl/nZGr0qjSdscfHcevTo=
