@@ -2,11 +2,13 @@ sudo: required
 services:
 - docker
 language: go
+go:
+- 1.6
 script:
 - set -e
 - export BUILD_NUMBER=$TRAVIS_BUILD_NUMBER
-- BASE=$(echo $PWD | sed "s|$GOPATH/src/||")
-- GO_TEST_PACKAGES=$(go list ./... | grep -v vendor | sed "s|$(BASE)/|./|" )
+- export BASE=$(echo $PWD | sed "s|$GOPATH/src/||")
+- export GO_TEST_PACKAGES=$(go list ./... | grep -v vendor | sed "s|$(BASE)/|./|" )
 - go test $GO_TEST_PACKAGES
 # - goveralls -coverprofile=coverage.out -service travis-ci -repotoken $COVERALLS_TOKEN
 
