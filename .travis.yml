@@ -11,12 +11,13 @@ script:
 - export GO_TEST_PACKAGES=$(go list ./... | grep -v vendor | sed "s|$BASE/|./|" )
 - go test $GO_TEST_PACKAGES
 before_install:
-# - docker login -u $DOCKER_REG_USERNAME -p $DOCKER_REG_PASSWORD $DOCKER_REGISTRY
-# - chmod 755 ./docker-push.sh
 - go get github.com/mitchellh/gox
 - go get -u github.com/tcnksm/ghr
 after_success:
 - gox -output "dist/{{.OS}}_{{.Arch}}_{{.Dir}}"
 - ghr --username $GITHUB_USER --token $GITHUB_TOKEN --replace --prerelease --debug pre-release dist/
 - make builddocker
-# - "./docker-push.sh"
+env:
+  global:
+  - secure: HO6h+9N6uc59cZRN5UMmF9rSDAnPDb7XoKAyL5zNfOcp8YYH/FIStcVv5IDqs3rC6yHP334JCrm7IakIlyvZ6hntUnNGysmY4dAxztB7X1GdlNZfZsAlJNVrbJpIO3g4QEfU1ujQ5lkhhnJQCqkYPaH8yP78GH/rlONMqaXV4zZj98PBJGnOilxJin2C7aitNsnrD8gu3LWTvVq2JS9VsER3zmmkVN3beBM6RfMsZLc1FU+eqwFlCE2x75nKkYWVWJmJOh/RTTNmyan7RV9rP/TuDsBiW6HxKLYJCiOcBlsXD79BihO2jJ1SNdoPFXgOLtgS6ff/yLjmxFAwQchL1xCF8H9wzIWLgcUhodNCK/vKX6fyW66E8bLaML5Z7/v8Q406fgTxRvkNzC8DnftfqO+qRVwJ1kHIjZp799tk6EO9iS4N0BEbxhGHP8ZDrxlOs8f48NqBgeN4W03/QQBLZoc+IeD0gsu1SQID960JFb5udEdnjhOF02iatmFOGh6B4LgF3qaFxjykVAPsIRsZ7+QlQEHsYXA+GIKGqjXs7Ges055/J8QLvJMy8WqGNILhpL/kt7q0gFr5SFiKqhOmhi0BqGr1Une8K3Ximz36xv7J94xUfx+Ip63OQDMHad9y7M0Xrw53EzLhwa6YCne9Q/zb67/bJVQglUcQ7iYusuQ=
+  - secure: VU0IMLwwi35GsPW/0aoLvch3mqL2pYmub5FdA3YjVolWGlcOcN/WGrYRjJN1KcSEUVaJ5OLZw1TDXTnD2HDn6lZu7daty/l8wWJMIO+SJ28OYAL6kho+U79RZk3AMD0CGunfHgBmamIgNEKko+7e69PV60D0sPFTIpC+CbfRdm7QPORsshlCyUhR60AJozziZukWEHqv4b74Lh/mq0OpH93TEo81vgOaEvf99C0gsuuyCCcB/ORc9LOWbSN3v+uPjLPy2kYRfTWALgl7G5u6Ug2p0kJxQgFyr2YDrBmb2gJjz1ZL24LljyWe5y2kQnB2wd/psXk8P+G8jjvfbKYx7+gCuI1QT920ScoWNdBJTfwSSoEL5z48gcBAcqRYoR02FzN6GEsz0JAkEnZ53Fqp2+v8CT8sEZ/Hlm8DJ0uQApe/FQuYcUX1PpB3ykdeNL57NZeUKxiZ+X/9bDmo4m9gjJH2Nj65QF0qgwLuzDJ6pASOwNIhZG7OM69tqjy+UVNYbwgk1AaKgxeBZcCrOOysap/FTPRecaUhiEsskxQuYEkMbwbewQFlkiBBBDwoU4GGmIuLkmwuuybNYpzWG6/CvCppA1oabQmTWeCLzZOQxhbkDVSwGHsKQcEkK7LdAWFCsU/AY83wJ8XxFkoZYIKkJqmvQbiJj+BEdLbIrtnU3C8=
