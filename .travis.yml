@@ -10,7 +10,6 @@ script:
 - export BASE=$(echo $PWD | sed "s|$GOPATH/src/||")
 - export GO_TEST_PACKAGES=$(go list ./... | grep -v vendor | sed "s|$BASE/|./|" )
 - go test $GO_TEST_PACKAGES
-- goveralls -coverprofile=coverage.out -service travis-ci -repotoken $COVERALLS_TOKEN
 before_install:
 # - docker login -u $DOCKER_REG_USERNAME -p $DOCKER_REG_PASSWORD $DOCKER_REGISTRY
 # - chmod 755 ./docker-push.sh
