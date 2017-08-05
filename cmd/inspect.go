@@ -17,7 +17,7 @@ package cmd
 import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/ghodss/yaml"
-	tf "github.com/backpackhealth/formterra/tfproject"
+	tf "github.com/jmahowald/formterra/tfproject"
 	"github.com/spf13/cobra"
 )
 
