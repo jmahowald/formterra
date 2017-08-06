@@ -10,10 +10,11 @@ script:
 - export BASE=$(echo $PWD | sed "s|$GOPATH/src/||")
 - export GO_TEST_PACKAGES=$(go list ./... | grep -v vendor | sed "s|$BASE/|./|" )
 - go test $GO_TEST_PACKAGES
-before_install:
+- echo "Troubehsooting env encyrpt $GITHUB_TOKEN"
+- env
+after_success:
 - go get github.com/mitchellh/gox
 - go get -u github.com/tcnksm/ghr
-after_success:
 - gox -output "dist/{{.OS}}_{{.Arch}}_{{.Dir}}"
 - ghr --username $GITHUB_USER --token $GITHUB_TOKEN --replace --prerelease --debug
   pre-release dist/
