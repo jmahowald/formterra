@@ -10,8 +10,6 @@ script:
 - export BASE=$(echo $PWD | sed "s|$GOPATH/src/||")
 - export GO_TEST_PACKAGES=$(go list ./... | grep -v vendor | sed "s|$BASE/|./|" )
 - go test $GO_TEST_PACKAGES
-- echo "Troubehsooting env encyrpt $GITHUB_TOKEN"
-- env
 after_success:
 - go get github.com/mitchellh/gox
 - go get -u github.com/tcnksm/ghr
@@ -19,7 +17,3 @@ after_success:
 - ghr --username $GITHUB_USER --token $GITHUB_TOKEN --replace --prerelease --debug
   pre-release dist/
 - make builddocker
-env:
-  global:
-  - secure: f5iy0ipJuIid04t6iE9wV/22bRJquHFzm3KR92Tq03F794X/7bOhdAcQGnGsEyf9uOiePnQ/39TwyGsVTuvFZCb4BzF6h503K0mkdSDwKHfaaaQqvtaJHvZp9/dz5S3j7JMLFl6usT0Iw1kA3Pcm+Ck0GwDloc1lj3dW9blNmaHKOBfdfSimlU8RwKbfOvbSPRzBGWiGeewt8GzloGxWifRva0YXY5J3zEbpNgQEqEwg5+5LKBrnTqx4S7931u5AHbuU2cWspDMiaZpv+JAV0ZmtTeDDh9ZqXcJNhm/NObmXTfInyqF8+4GV+/H5L5F8Zm+d3GpvbsLnr5r43a+vB443pVCMYwQsWzsL1ASQ2E4tnPGeYHhigJ3IwTmtPHPrMS337uUSoZKpIUvflLZcf1LtwreyleW3KJ9RfR0umo2EsPtrBSiUvGSvz+X+IRxqC146q5r2+BjhqEv/Sv+NAu0ZRd8gLrfM85Ly28GGqxZzsBMeomSihgu+wTEzXYVQE9STFDvsSgq1agg8aGjXze6JOj6uVhkRRrHqtYSsaWnJPw+b7qpy95KaCAcQrONTrqnFXBmhgTYFZJs1JxG75t34nqAMGrNJ9lYBMTEybOmuvwLcCANvQjyEyyyBlWJed24L8YnphKfD/T5KwBE+rlc7U2BJLu6a6G4xKdlAbq8=
-  - secure: Rya379rUZKAODfJA1S+fq8PTM68Vyzn2WgKmNeWHSHdRdKH/JAugcPzJDJ9W7ilHuh9VHc3BNQFg3o5s33rOFg3h/+ZgTQd6p9n4H668ti0MKSBBA7W4nf2zqrJ4IHPAsU6oNeQYWTRRR80IC5JjQC5QrbzDHR+4At9Tly5F/vZ8fc/YtLfxtQX6Rum8tJWt2bAMiMFPAlY/vSOHUBQXdcdiZ5lCgVxjxFQ5bqbPg6HFlMxKpiTUeVI2w6HgF3f0bIm+n/NDvYZEc8ZJlpxamjdKI0+qiUDoJ+Nqv2R7KrDxk4V/ohTjWwKGwQEykIFNyVOu9JfKsWTZqiZ0SSwBltfr4NMrvPnxyj9HvHGU0EkzxQwN7M2WG9CZowP0MBUcXAM9Tggl1NN6LByqbuDFYR786SaCv5pCPnVtYsN3AAK/BjYbX7POq7SD9WzRPm6jZv5feJAvezrUBvL/u4ew1AH/EDrVxtYdpq1pYf3MxRwivJ6ifCyh07GaM+MXbXsffsjdSyuEdwCIJP2LRbvz8ltD+vwgQQ6dizBHe+OJlIZgYAC98kilIUhxsWTiG9va97V+t03dYl5c9hq4P3v/M72jvrBHvFd8cS10t/rUPS5WrQt/oj51ZTaMDrFmAfwgExw2brjAKbhP7RZNrsZTjqLCWPdA6uwoB9sNxHONhQc=
