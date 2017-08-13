@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/backpackhealth/formterra/cmd"
+	"github.com/jmahowald/formterra/cmd"
 	"github.com/spf13/cobra/doc"
 )
 

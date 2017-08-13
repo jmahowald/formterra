@@ -6,7 +6,7 @@ import (
 
 	"fmt"
 
-	"github.com/backpackhealth/formterra/core"
+	"github.com/jmahowald/formterra/core"
 	//TODO wrap this up in our own to allow us to switch out easier?
 	log "github.com/Sirupsen/logrus"
 )
